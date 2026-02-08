@@ -1,40 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Student View</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KTU Timetable System</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  @media print {
+    button, select { display: none !important; }
+    body { background: white; }
+  }
+</style>
+
+<script>
+
+  // COURSE DATA (Sample)
+const data = {
+  CSE: {
+    3: [
+      { code: "CST201", name: "Data Structures" },
+      { code: "CST203", name: "Logic System Design" },
+      { code: "CST205", name: "OOP" }
+    ],
+    4: [
+      { code: "CST204", name: "Operating Systems" },
+      { code: "CST206", name: "DBMS" }
+    ]
+  },
+  ECE: {
+    3: [
+      { code: "ECT201", name: "Network Theory" },
+      { code: "ECT203", name: "Analog Circuits" }
+    ]
+  }
+};
+
+
+  // LOAD COURSES
+
+function loadCourses() {
+  const branch = document.getElementById("branch").value;
+  const semester = document.getElementById("semester").value;
+  const container = document.getElementById("courseList");
+  container.innerHTML = "";
+
+  if (data[branch] && data[branch][semester]) {
+    data[branch][semester].forEach(course => {
+      container.innerHTML += `
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm">
+          <h3 class="font-bold text-blue-700">${course.code}</h3>
+          <p>${course.name}</p>
+        </div>
+      `;
+    });
+  } else {
+    container.innerHTML = `<p class="text-gray-400">No data available.</p>`;
+  }
+
+  generateTimetable();
+}
+
+
+   //GENERATE SIMPLE TIMETABLE
+
+function generateTimetable() {
+  const branch = document.getElementById("branch").value;
+  const semester = document.getElementById("semester").value;
+  const table = document.getElementById("timetableBody");
+  table.innerHTML = "";
+
+  const times = ["8:00 - 9:30", "9:30 - 11:00", "11:15 - 12:45"];
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+  if (!data[branch] || !data[branch][semester]) return;
+
+  const subjects = data[branch][semester];
+
+  times.forEach((time, tIndex) => {
+    let row = `<tr class="text-center">
+      <td class="border p-3 font-semibold bg-gray-50">${time}</td>`;
+
+    days.forEach((day, dIndex) => {
+      const subject = subjects[(tIndex + dIndex) % subjects.length];
+      row += `<td class="border p-3 hover:bg-blue-50 transition">
+                <div class="font-semibold text-blue-600">${subject.code}</div>
+                <div class="text-sm text-gray-600">${subject.name}</div>
+              </td>`;
+    });
+
+    row += "</tr>";
+    table.innerHTML += row;
+  });
+}
+
+//  DOWNLOAD PDF
+
+function downloadPDF() {
+  window.print();
+}
+</script>
 </head>
-<body>
-  <h2>Student Timetable</h2>
 
-  <button onclick="load()">View Timetable</button>
+<body class="bg-gray-100 min-h-screen">
 
-  <table border="1" id="table">
-    <tr>
-      <th>Day</th>
-      <th>Period</th>
-      <th>Subject</th>
-    </tr>
-  </table>
+<div class="max-w-7xl mx-auto p-6">
 
-  <script>
-    async function load() {
-      const res = await fetch("/view");
-      const data = await res.json();
+<h1 class="text-3xl font-bold mb-8 text-center text-blue-700">
+KTU B.Tech Timetable System
+</h1>
 
-      const table = document.getElementById("table");
+<!-- FILTER SECTION -->
+<div class="grid md:grid-cols-3 gap-6 mb-10 bg-white p-6 rounded-xl shadow">
 
-      data.forEach(row => {
-        const tr = document.createElement("tr");
+<div>
+<label class="block text-sm font-semibold mb-2">Branch</label>
+<select id="branch" onchange="loadCourses()"
+class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+<option value="CSE">Computer Science & Engineering</option>
+<option value="ECE">Electronics & Communication</option>
+<option value="EEE">Electrical & Electronics</option>
+<option value="ME">Mechanical Engineering</option>
+<option value="CE">Civil Engineering</option>
+<option value="IT">Information Technology</option>
+</select>
+</div>
 
-        tr.innerHTML = `
-          <td>${row.day}</td>
-          <td>${row.period}</td>
-          <td>${row.subject}</td>
-        `;
+<div>
+<label class="block text-sm font-semibold mb-2">Semester</label>
+<select id="semester" onchange="loadCourses()"
+class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500">
+<option value="1">Semester 1</option>
+<option value="2">Semester 2</option>
+<option value="3">Semester 3</option>
+<option value="4">Semester 4</option>
+<option value="5">Semester 5</option>
+<option value="6">Semester 6</option>
+<option value="7">Semester 7</option>
+<option value="8">Semester 8</option>
+</select>
+</div>
 
-        table.appendChild(tr);
-      });
-    }
-  </script>
+<div class="flex items-end">
+<button onclick="downloadPDF()"
+class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+Download / Print PDF
+</button>
+</div>
+
+</div>
+
+<!-- COURSE LIST -->
+<h2 class="text-xl font-bold mb-4 text-gray-700">Courses</h2>
+
+<div id="courseList" class="grid md:grid-cols-2 gap-4 mb-12">
+<p class="text-gray-400">Select branch & semester.</p>
+</div>
+
+<!-- TIMETABLE -->
+<h2 class="text-xl font-bold mb-4 text-gray-700">Weekly Timetable</h2>
+
+<div class="overflow-x-auto bg-white rounded-xl shadow">
+<table class="min-w-full border-collapse">
+<thead class="bg-blue-600 text-white">
+<tr>
+<th class="p-3 border">Time</th>
+<th class="p-3 border">Mon</th>
+<th class="p-3 border">Tue</th>
+<th class="p-3 border">Wed</th>
+<th class="p-3 border">Thu</th>
+<th class="p-3 border">Fri</th>
+</tr>
+</thead>
+
+<tbody id="timetableBody">
+</tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+loadCourses();
+</script>
+
 </body>
 </html>
