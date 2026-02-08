@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student View</title>
+</head>
+<body>
+  <h2>Student Timetable</h2>
+
+  <button onclick="load()">View Timetable</button>
+
+  <table border="1" id="table">
+    <tr>
+      <th>Day</th>
+      <th>Period</th>
+      <th>Subject</th>
+    </tr>
+  </table>
+
+  <script>
+    async function load() {
+      const res = await fetch("/view");
+      const data = await res.json();
+
+      const table = document.getElementById("table");
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${row.day}</td>
+          <td>${row.period}</td>
+          <td>${row.subject}</td>
+        `;
+
+        table.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+
+  <button onclick="generate()">Generate Timetable</button>
+
+  <p id="result"></p>
+
+  <script>
+    async function generate() {
+      const res = await fetch("/generate", {
+        method: "POST"
+      });
+
+      const data = await res.json();
+      document.getElementById("result").innerText = data.message;
+    }
+  </script>
+</body>
+</html>
