@@ -10,49 +10,31 @@ app.use(express.static("public"));
 
 
 // ================= LOGIN =================
-// ================= LOGIN =================
 app.post("/teacherlogin", (req, res) => {
   const { email, password } = req.body;
 
-  // STEP 1: Check ADMIN table
+  // Check ADMIN
   db.query(
     "SELECT id FROM admins WHERE email=? AND password=?",
     [email, password],
     (err, adminResult) => {
-      if (err) {
-        res.json({ success: false });
-        return;
-      }
+      if (err) return res.json({ success: false });
 
       if (adminResult.length > 0) {
-        // ADMIN FOUND
-        res.json({
-          success: true,
-          isAdmin: true
-        });
-        return;
+        return res.json({ success: true, isAdmin: true });
       }
 
-      // STEP 2: Check TEACHER table
+      // Check TEACHER
       db.query(
         "SELECT id FROM teacherlogin WHERE email=? AND password=?",
         [email, password],
         (err, teacherResult) => {
-          if (err) {
-            res.json({ success: false });
-            return;
-          }
+          if (err) return res.json({ success: false });
 
           if (teacherResult.length > 0) {
-            res.json({
-              success: true,
-              isAdmin: false
-            });
+            res.json({ success: true, isAdmin: false });
           } else {
-            res.json({
-              success: false,
-              message: "Wrong email or password"
-            });
+            res.json({ success: false, message: "Wrong email or password" });
           }
         }
       );
@@ -60,105 +42,121 @@ app.post("/teacherlogin", (req, res) => {
   );
 });
 
-// ================= TEACHERS CRUD =================
 
-app.get("/teachers",(req,res)=>{
-  db.query("SELECT * FROM teachers",(err,result)=>{
+// ================= TEACHERS CRUD =================
+app.get("/teachers", (req, res) => {
+  db.query("SELECT * FROM teachers", (err, result) => {
     res.json(result);
   });
 });
 
-app.post("/teacher",(req,res)=>{
-  const {name,dept,email} = req.body;
+app.post("/teacher", (req, res) => {
+  const { name, dept, email } = req.body;
   db.query(
     "INSERT INTO teachers(name,dept,email) VALUES(?,?,?)",
-    [name,dept,email],
-    ()=>res.json({success:true})
+    [name, dept, email],
+    () => res.json({ success: true })
   );
 });
 
-app.put("/teacher/:id",(req,res)=>{
-  const {name,dept,email} = req.body;
+app.put("/teacher/:id", (req, res) => {
+  const { name, dept, email } = req.body;
   db.query(
     "UPDATE teachers SET name=?,dept=?,email=? WHERE id=?",
-    [name,dept,email,req.params.id],
-    ()=>res.json({success:true})
+    [name, dept, email, req.params.id],
+    () => res.json({ success: true })
   );
 });
 
-app.delete("/teacher/:id",(req,res)=>{
-  db.query("DELETE FROM teachers WHERE id=?",
+app.delete("/teacher/:id", (req, res) => {
+  db.query(
+    "DELETE FROM teachers WHERE id=?",
     [req.params.id],
-    ()=>res.json({success:true})
+    () => res.json({ success: true })
   );
 });
 
 
 // ================= SUBJECTS CRUD =================
-
-app.get("/subjects",(req,res)=>{
-  db.query("SELECT * FROM subjects",(err,result)=>{
+app.get("/subjects", (req, res) => {
+  db.query("SELECT * FROM subjects", (err, result) => {
     res.json(result);
   });
 });
 
-app.post("/subject",(req,res)=>{
-  const {name,dept,sem,hours,lab} = req.body;
+// ADD SUBJECT (lab checkbox safe)
+app.post("/subject", (req, res) => {
+  const { name, dept, sem, hours } = req.body;
+  const lab = req.body.lab ? 1 : 0;
+
   db.query(
     "INSERT INTO subjects(name,dept,sem,hours,lab) VALUES(?,?,?,?,?)",
-    [name,dept,sem,hours,lab],
-    ()=>res.json({success:true})
+    [name, dept, sem, hours, lab],
+    () => res.json({ success: true })
   );
 });
 
-app.put("/subject/:id",(req,res)=>{
-  const {name,dept,sem,hours,lab} = req.body;
+// UPDATE SUBJECT
+app.put("/subject/:id", (req, res) => {
+  const { name, dept, sem, hours } = req.body;
+  const lab = req.body.lab ? 1 : 0;
+
   db.query(
     "UPDATE subjects SET name=?,dept=?,sem=?,hours=?,lab=? WHERE id=?",
-    [name,dept,sem,hours,lab,req.params.id],
-    ()=>res.json({success:true})
+    [name, dept, sem, hours, lab, req.params.id],
+    () => res.json({ success: true })
   );
 });
 
-app.delete("/subject/:id",(req,res)=>{
-  db.query("DELETE FROM subjects WHERE id=?",
+app.delete("/subject/:id", (req, res) => {
+  db.query(
+    "DELETE FROM subjects WHERE id=?",
     [req.params.id],
-    ()=>res.json({success:true})
+    () => res.json({ success: true })
   );
 });
 
 
-// ================= GENERATE TIMETABLE =================
+// ================= DASHBOARD STATS =================
+// TOTAL COURSES = total rows in subjects table
+app.get("/stats/subjects", (req, res) => {
+  db.query(
+    "SELECT COUNT(*) AS total FROM subjects",
+    (err, result) => {
+      if (err) return res.json({ total: 0 });
+      res.json({ total: result[0].total });
+    }
+  );
+});
 
-app.post("/generate",(req,res)=>{
 
+// ================= TIMETABLE =================
+app.post("/generate", (req, res) => {
   db.query("DELETE FROM timetable");
 
-  db.query("SELECT * FROM subjects",(err,subjects)=>{
+  db.query("SELECT * FROM subjects", (err, subjects) => {
+    let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    let period = 1;
 
-    let days=["Mon","Tue","Wed","Thu","Fri"];
-    let period=1;
-
-    subjects.forEach((s,i)=>{
+    subjects.forEach((s, i) => {
       db.query(
         "INSERT INTO timetable(day,period,subject) VALUES(?,?,?)",
-        [days[i%5],period++,s.name]
+        [days[i % 5], period++, s.name]
       );
     });
 
-    res.json({message:"Timetable Generated Successfully"});
+    res.json({ message: "Timetable Generated Successfully" });
   });
 });
 
-
-// ================= VIEW TIMETABLE =================
-
-app.get("/timetable",(req,res)=>{
-  db.query("SELECT * FROM timetable",(err,result)=>{
+app.get("/timetable", (req, res) => {
+  db.query("SELECT * FROM timetable", (err, result) => {
     res.json(result);
   });
 });
 
-app.listen(3000,()=>{
+
+// ================= SERVER =================
+app.listen(3000, () => {
   console.log("🚀 Server running at http://localhost:3000");
 });

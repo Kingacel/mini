@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Subject</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow">
+
+  <h2 class="text-xl font-bold mb-4">Add / Edit Subject</h2>
+
+  <!-- FORM -->
+  <form id="subjectForm" class="space-y-4">
+
+    <!--  ADDED: hidden id for edit -->
+    <input type="hidden" name="id" id="subjectId">
+
+    <input name="name" id="name" required
+           class="w-full border p-2 rounded"
+           placeholder="Subject Name">
+
+    <input name="dept" id="dept" required
+           class="w-full border p-2 rounded"
+           placeholder="Department">
+
+    <input name="sem" id="sem" required
+           class="w-full border p-2 rounded"
+           placeholder="Semester">
+
+    <input name="hours" id="hours" type="number" min="1" required
+           class="w-full border p-2 rounded"
+           placeholder="Hours per week">
+
+    <label class="flex items-center gap-2">
+      <input type="checkbox" name="lab" id="lab">
+      <span>Lab Subject</span>
+    </label>
+
+    <!--  CHANGED: Save / Update button -->
+    <button id="saveBtn"
+      class="bg-blue-600 text-white px-4 py-2 rounded">
+      Save Subject
+    </button>
+
+  </form>
+
+  <!-- SUBJECT LIST -->
+  <h3 class="text-lg font-semibold mt-8 mb-3">Subjects List</h3>
+
+  <table class="w-full border text-sm">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="border p-2">Name</th>
+        <th class="border p-2">Dept</th>
+        <th class="border p-2">Sem</th>
+        <th class="border p-2">Hours</th>
+        <th class="border p-2">Lab</th>
+        <th class="border p-2">Action</th>
+      </tr>
+    </thead>
+    <tbody id="subjectTable"></tbody>
+  </table>
+
+</div>
+
+<script>
+const form = document.getElementById("subjectForm");
+const table = document.getElementById("subjectTable");
+const saveBtn = document.getElementById("saveBtn");
+
+//  LOAD SUBJECT LIST
+async function loadSubjects() {
+  const res = await fetch("/subjects");
+  const subjects = await res.json();
+
+  table.innerHTML = "";
+
+  subjects.forEach(s => {
+    table.innerHTML += `
+      <tr>
+        <td class="border p-2">${s.name}</td>
+        <td class="border p-2">${s.dept}</td>
+        <td class="border p-2">${s.sem}</td>
+        <td class="border p-2">${s.hours}</td>
+        <td class="border p-2">${s.lab ? "Yes" : "No"}</td>
+        <td class="border p-2">
+          <button class="text-blue-600"
+            onclick='editSubject(${JSON.stringify(s)})'>
+            Edit
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+//  EDIT SUBJECT
+function editSubject(s) {
+  subjectId.value = s.id;
+  name.value = s.name;
+  dept.value = s.dept;
+  sem.value = s.sem;
+  hours.value = s.hours;
+  lab.checked = s.lab === 1;
+
+  saveBtn.textContent = "Update Subject";
+  saveBtn.classList.replace("bg-blue-600", "bg-green-600");
+}
+
+// SAVE / UPDATE
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const id = subjectId.value;
+  const data = new FormData(form);
+
+  const url = id ? `/subject/${id}` : "/subject";
+  const method = id ? "PUT" : "POST";
+
+  await fetch(url, {
+    method,
+    body: data
+  });
+
+  form.reset();
+  subjectId.value = "";
+  saveBtn.textContent = "Save Subject";
+  saveBtn.classList.replace("bg-green-600", "bg-blue-600");
+
+  loadSubjects();
+});
+
+// INITIAL LOAD
+loadSubjects();
+</script>
+
+</body>
+</html>
