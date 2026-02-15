@@ -10,33 +10,55 @@ app.use(express.static("public"));
 
 
 // ================= LOGIN =================
+// ================= LOGIN =================
+app.post("/teacherlogin", (req, res) => {
+  const { email, password } = req.body;
 
-app.post("/teacherlogin", (req,res)=>{
-  const {email,password} = req.body;
-
+  // STEP 1: Check ADMIN table
   db.query(
     "SELECT id FROM admins WHERE email=? AND password=?",
-    [email,password],
-    (err,result)=>{
-      if(err) return res.json({success:false});
-      res.json({success: result.length>0});
+    [email, password],
+    (err, adminResult) => {
+      if (err) {
+        res.json({ success: false });
+        return;
+      }
+
+      if (adminResult.length > 0) {
+        // ADMIN FOUND
+        res.json({
+          success: true,
+          isAdmin: true
+        });
+        return;
+      }
+
+      // STEP 2: Check TEACHER table
+      db.query(
+        "SELECT id FROM teacherlogin WHERE email=? AND password=?",
+        [email, password],
+        (err, teacherResult) => {
+          if (err) {
+            res.json({ success: false });
+            return;
+          }
+
+          if (teacherResult.length > 0) {
+            res.json({
+              success: true,
+              isAdmin: false
+            });
+          } else {
+            res.json({
+              success: false,
+              message: "Wrong email or password"
+            });
+          }
+        }
+      );
     }
   );
 });
-
-app.post("/studentlogin", (req,res)=>{
-  const {email,password} = req.body;
-
-  db.query(
-    "SELECT id FROM students WHERE email=? AND password=?",
-    [email,password],
-    (err,result)=>{
-      if(err) return res.json({success:false});
-      res.json({success: result.length>0});
-    }
-  );
-});
-
 
 // ================= TEACHERS CRUD =================
 

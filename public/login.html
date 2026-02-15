@@ -113,34 +113,32 @@
   </div>
 
   <script>
-    async function login() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+async function login() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-      if (!email || !password) {
-        document.getElementById('msg').innerText = "Please fill all fields";
-        return;
-      }
+  const res = await fetch('/teacherlogin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
 
-      const res = await fetch('/teacherlogin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+  const data = await res.json();
 
-      const data = await res.json();
+  if (data.success) {
 
-      if (data.success) {
-        document.getElementById('msg').style.color = "green";
-        document.getElementById('msg').innerText = "Login successful!";
-        // later redirect to dashboard
-         window.location = "admin.html";
-      } else {
-        document.getElementById('msg').style.color = "red";
-        document.getElementById('msg').innerText = "Invalid email or password";
-      }
-    }
-  </script>
+    /* ★ ADDED: store login info */
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("isAdmin", data.isAdmin); // ★ TRUE or FALSE
+
+    window.location = "admin.html";
+  } else {
+    document.getElementById('msg').innerText =
+      "Invalid user id or password";
+  }
+}
+</script>
+
 
 </body>
 </html>
