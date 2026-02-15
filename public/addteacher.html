@@ -1,0 +1,49 @@
+<style>
+body{
+  font-family:Segoe UI;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  display:flex;
+  height:100vh;
+  justify-content:center;
+  align-items:center;
+}
+
+.card{
+  background:white;
+  padding:40px;
+  border-radius:15px;
+  text-align:center;
+}
+
+input{
+  padding:12px;
+  width:250px;
+  margin:10px;
+}
+
+button{
+  padding:12px 20px;
+  background:#0072ff;
+  color:white;
+  border:none;
+  border-radius:8px;
+}
+</style>
+
+
+
+<input id="name" placeholder="Name">
+<input id="dept" placeholder="Department">
+
+<button onclick="save()">Save</button>
+
+<script>
+async function save(){
+ await fetch('/teacher',{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+ 
+ });
+ alert("Added");
+}
+</script>

@@ -1,24 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Dashboard</title>
-</head>
-<body>
-  <h2>Admin Dashboard</h2>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Teacher Dashboard</title>
 
-  <button onclick="generate()">Generate Timetable</button>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 
-  <p id="result"></p>
-
-  <script>
-    async function generate() {
-      const res = await fetch("/generate", {
-        method: "POST"
-      });
-
-      const data = await res.json();
-      document.getElementById("result").innerText = data.message;
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: "#135bec",
+                "background-light": "#f6f6f8",
+                "background-dark": "#101622",
+            },
+            fontFamily: {
+                display: ["Lexend"]
+            }
+        }
     }
-  </script>
+}
+</script>
+
+<style>
+body { font-family: 'Lexend', sans-serif; }
+</style>
+
+</head>
+
+<body class="bg-background-light min-h-screen text-[#111318]">
+
+<div class="flex min-h-screen">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="w-64 bg-white border-r border-gray-200 fixed h-full">
+<div class="p-6 flex flex-col h-full">
+
+<!-- Profile -->
+<div class="flex items-center gap-3 mb-8">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<h2 class="text-sm font-semibold">Teacher Panel</h2>
+<p class="text-xs text-gray-500">Admin Dashboard</p>
+</div>
+</div>
+
+<!-- Navigation -->
+<nav class="flex flex-col gap-2 flex-1">
+
+<a href="addteacher.html"
+class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+<span class="material-symbols-outlined">person_add</span>
+<span>Add Teacher</span>
+</a>
+
+<a href="manageteachers.html"
+class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+<span class="material-symbols-outlined">groups</span>
+<span>Manage Teachers</span>
+</a>
+
+<a href="addsubject.html"
+class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+<span class="material-symbols-outlined">menu_book</span>
+<span>Add Subject</span>
+</a>
+
+<a href="managesubjects.html"
+class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+<span class="material-symbols-outlined">library_books</span>
+<span>Manage Subjects</span>
+</a>
+
+<button onclick="generate()"
+class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition text-left">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span>Generate Timetable</span>
+</button>
+
+<a href="timetable.html"
+class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+<span class="material-symbols-outlined">calendar_month</span>
+<span>View Timetable</span>
+</a>
+
+</nav>
+
+</div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="ml-64 flex-1 p-8">
+
+<h1 class="text-3xl font-bold mb-6">Teacher Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+<div class="bg-white p-6 rounded-xl shadow border">
+<p class="text-sm text-gray-500">Workload Capacity</p>
+<p class="text-2xl font-bold">12 / 18 hrs/week</p>
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow border">
+<p class="text-sm text-gray-500">Current Assignments</p>
+<p class="text-2xl font-bold">4 Courses</p>
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow border">
+<p class="text-sm text-gray-500">System Status</p>
+<p class="text-2xl font-bold text-green-600">Active</p>
+</div>
+
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow border">
+<h2 class="text-lg font-semibold mb-4">Quick Information</h2>
+<p class="text-gray-600">
+Use the sidebar to manage teachers, subjects, and generate timetable automatically.
+</p>
+</div>
+
+</main>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+async function generate(){
+  const res = await fetch('/generate',{method:'POST'});
+  const data = await res.json();
+  alert(data.message);
+}
+</script>
+
 </body>
 </html>

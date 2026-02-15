@@ -1,53 +1,142 @@
 const express = require("express");
-const pool = require("./db");
+const cors = require("cors");
+const db = require("./db");
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const days = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-const periods = 6;
 
-// Generate timetable
-app.post("/generate", async (req, res) => {
+// ================= LOGIN =================
 
-  await pool.query("DELETE FROM timetable"); // clear old timetable
+app.post("/teacherlogin", (req,res)=>{
+  const {email,password} = req.body;
 
-  const [subjects] = await pool.query("SELECT * FROM subjects");
-
-  for (let day of days) {
-    for (let p = 1; p <= periods; p++) {
-
-      for (let subject of subjects) {
-        try {
-          await pool.query(
-            "INSERT INTO timetable (day, period, subject_id, teacher_id) VALUES (?, ?, ?, ?)",
-            [day, p, subject.id, subject.teacher_id]
-          );
-          break;
-        } catch (err) {
-          continue; // teacher clash -> try next subject
-        }
-      }
-
+  db.query(
+    "SELECT id FROM admins WHERE email=? AND password=?",
+    [email,password],
+    (err,result)=>{
+      if(err) return res.json({success:false});
+      res.json({success: result.length>0});
     }
-  }
-
-  res.json({ message: "Timetable Generated Successfully" });
+  );
 });
 
-// View timetable
-app.get("/view", async (req, res) => {
-  const [rows] = await pool.query(`
-    SELECT timetable.day, timetable.period, subjects.name AS subject
-    FROM timetable
-    JOIN subjects ON timetable.subject_id = subjects.id
-    ORDER BY day, period
-  `);
+app.post("/studentlogin", (req,res)=>{
+  const {email,password} = req.body;
 
-  res.json(rows);
+  db.query(
+    "SELECT id FROM students WHERE email=? AND password=?",
+    [email,password],
+    (err,result)=>{
+      if(err) return res.json({success:false});
+      res.json({success: result.length>0});
+    }
+  );
 });
 
-app.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
+
+// ================= TEACHERS CRUD =================
+
+app.get("/teachers",(req,res)=>{
+  db.query("SELECT * FROM teachers",(err,result)=>{
+    res.json(result);
+  });
+});
+
+app.post("/teacher",(req,res)=>{
+  const {name,dept,email} = req.body;
+  db.query(
+    "INSERT INTO teachers(name,dept,email) VALUES(?,?,?)",
+    [name,dept,email],
+    ()=>res.json({success:true})
+  );
+});
+
+app.put("/teacher/:id",(req,res)=>{
+  const {name,dept,email} = req.body;
+  db.query(
+    "UPDATE teachers SET name=?,dept=?,email=? WHERE id=?",
+    [name,dept,email,req.params.id],
+    ()=>res.json({success:true})
+  );
+});
+
+app.delete("/teacher/:id",(req,res)=>{
+  db.query("DELETE FROM teachers WHERE id=?",
+    [req.params.id],
+    ()=>res.json({success:true})
+  );
+});
+
+
+// ================= SUBJECTS CRUD =================
+
+app.get("/subjects",(req,res)=>{
+  db.query("SELECT * FROM subjects",(err,result)=>{
+    res.json(result);
+  });
+});
+
+app.post("/subject",(req,res)=>{
+  const {name,dept,sem,hours,lab} = req.body;
+  db.query(
+    "INSERT INTO subjects(name,dept,sem,hours,lab) VALUES(?,?,?,?,?)",
+    [name,dept,sem,hours,lab],
+    ()=>res.json({success:true})
+  );
+});
+
+app.put("/subject/:id",(req,res)=>{
+  const {name,dept,sem,hours,lab} = req.body;
+  db.query(
+    "UPDATE subjects SET name=?,dept=?,sem=?,hours=?,lab=? WHERE id=?",
+    [name,dept,sem,hours,lab,req.params.id],
+    ()=>res.json({success:true})
+  );
+});
+
+app.delete("/subject/:id",(req,res)=>{
+  db.query("DELETE FROM subjects WHERE id=?",
+    [req.params.id],
+    ()=>res.json({success:true})
+  );
+});
+
+
+// ================= GENERATE TIMETABLE =================
+
+app.post("/generate",(req,res)=>{
+
+  db.query("DELETE FROM timetable");
+
+  db.query("SELECT * FROM subjects",(err,subjects)=>{
+
+    let days=["Mon","Tue","Wed","Thu","Fri"];
+    let period=1;
+
+    subjects.forEach((s,i)=>{
+      db.query(
+        "INSERT INTO timetable(day,period,subject) VALUES(?,?,?)",
+        [days[i%5],period++,s.name]
+      );
+    });
+
+    res.json({message:"Timetable Generated Successfully"});
+  });
+});
+
+
+// ================= VIEW TIMETABLE =================
+
+app.get("/timetable",(req,res)=>{
+  db.query("SELECT * FROM timetable",(err,result)=>{
+    res.json(result);
+  });
+});
+
+app.listen(3000,()=>{
+  console.log("🚀 Server running at http://localhost:3000");
 });
