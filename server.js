@@ -4,8 +4,10 @@ const db = require("./db");
 
 const app = express();
 
+// ================= MIDDLEWARE =================
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // for JSON
+app.use(express.urlencoded({ extended: true })); // ⭐ REQUIRED for FormData
 app.use(express.static("public"));
 
 
@@ -13,7 +15,7 @@ app.use(express.static("public"));
 app.post("/teacherlogin", (req, res) => {
   const { email, password } = req.body;
 
-  // Check ADMIN
+  // CHECK ADMIN
   db.query(
     "SELECT id FROM admins WHERE email=? AND password=?",
     [email, password],
@@ -24,7 +26,7 @@ app.post("/teacherlogin", (req, res) => {
         return res.json({ success: true, isAdmin: true });
       }
 
-      // Check TEACHER
+      // CHECK TEACHER
       db.query(
         "SELECT id FROM teacherlogin WHERE email=? AND password=?",
         [email, password],
@@ -52,6 +54,7 @@ app.get("/teachers", (req, res) => {
 
 app.post("/teacher", (req, res) => {
   const { name, dept, email } = req.body;
+
   db.query(
     "INSERT INTO teachers(name,dept,email) VALUES(?,?,?)",
     [name, dept, email],
@@ -61,6 +64,7 @@ app.post("/teacher", (req, res) => {
 
 app.put("/teacher/:id", (req, res) => {
   const { name, dept, email } = req.body;
+
   db.query(
     "UPDATE teachers SET name=?,dept=?,email=? WHERE id=?",
     [name, dept, email, req.params.id],
@@ -84,7 +88,7 @@ app.get("/subjects", (req, res) => {
   });
 });
 
-// ADD SUBJECT (lab checkbox safe)
+// ADD SUBJECT
 app.post("/subject", (req, res) => {
   const { name, dept, sem, hours } = req.body;
   const lab = req.body.lab ? 1 : 0;
@@ -108,6 +112,7 @@ app.put("/subject/:id", (req, res) => {
   );
 });
 
+// DELETE SUBJECT
 app.delete("/subject/:id", (req, res) => {
   db.query(
     "DELETE FROM subjects WHERE id=?",
@@ -118,7 +123,6 @@ app.delete("/subject/:id", (req, res) => {
 
 
 // ================= DASHBOARD STATS =================
-// TOTAL COURSES = total rows in subjects table
 app.get("/stats/subjects", (req, res) => {
   db.query(
     "SELECT COUNT(*) AS total FROM subjects",
@@ -135,6 +139,8 @@ app.post("/generate", (req, res) => {
   db.query("DELETE FROM timetable");
 
   db.query("SELECT * FROM subjects", (err, subjects) => {
+    if (err) return res.json({ success: false });
+
     let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
     let period = 1;
 
@@ -158,5 +164,5 @@ app.get("/timetable", (req, res) => {
 
 // ================= SERVER =================
 app.listen(3000, () => {
-  console.log("🚀 Server running at http://localhost:3000");
+  console.log("Server running at http://localhost:3000");
 });
