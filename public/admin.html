@@ -239,7 +239,35 @@ async function loadCourseCount() {
 // LOAD ON PAGE OPEN
 loadCourseCount();
 </script>
+<script>
+  //total hours
+  async function totalHours() {
+  try {
+    const res = await fetch('/teachers/count');
+    const data = await res.json();
+    document.getElementById('teacherCount').innerText = data.total;
+  } catch (err) {
+    console.error('Failed to load teacher count', err);
+  }
+}
+</script>
 
+
+<script>
+//TOTAL TEACHER
+async function loadTeacherCount() {
+  try {
+    const res = await fetch('/teachers/count');
+    const data = await res.json();
+    document.getElementById('teacherCount').innerText = data.total;
+  } catch (err) {
+    console.error('Failed to load teacher count', err);
+  }
+}
+
+// load on page start
+loadTeacherCount();
+</script>
 
 
 
@@ -271,9 +299,18 @@ document.querySelectorAll(".admin-only").forEach(el => {
 });
 
 /* GENERATE TIMETABLE */
+/* GENERATE TIMETABLE */
 async function generate(){
   try{
-    const res = await fetch('/generate', { method: 'POST' });
+    const res = await fetch('/generate', {
+      method: 'POST',                          
+      headers: { 'Content-Type':'application/json' }, 
+      body: JSON.stringify({
+        dept: deptSelect.value,                
+        sem: semSelect.value                  
+      })
+    });
+
     const data = await res.json();
     alert(data.message);
   }catch(err){
@@ -282,9 +319,7 @@ async function generate(){
 }
 
 //clean generator code
-.period-cell {
-        @apply p-1.5 bg-blue-50 border border-blue-100 rounded text-[10px] text-center flex flex-col justify-center min-h-[45px] transition-colors hover:bg-white;
-    }
+
 </script>
 
 </body>
