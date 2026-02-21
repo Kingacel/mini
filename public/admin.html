@@ -59,31 +59,31 @@ body { font-family: 'Lexend', sans-serif; }
 
       <!-- ADMIN ONLY -->
       <a href="addteacher.html"
-         class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
         <span class="material-symbols-outlined">person_add</span>
         <span>Add Teacher</span>
       </a>
 
       <a href="manageteachers.html"
-         class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
         <span class="material-symbols-outlined">groups</span>
         <span>Manage Teachers</span>
       </a>
 
       <a href="addsubject.html"
-         class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
         <span class="material-symbols-outlined">menu_book</span>
         <span>Add Subject</span>
       </a>
 
       <a href="managesubjects.html"
-         class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
         <span class="material-symbols-outlined">library_books</span>
         <span>Manage Subjects</span>
       </a>
 
       <button onclick="generate()"
-        class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition text-left">
+        class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition text-left">
         <span class="material-symbols-outlined">auto_awesome</span>
         <span>Generate Timetable</span>
       </button>
@@ -122,9 +122,29 @@ body { font-family: 'Lexend', sans-serif; }
   <div class="bg-white p-6 rounded-xl shadow border">
   <p class="text-sm text-gray-500">Current Assignments</p>
 
+
   <!-- THIS TEXT WILL CHANGE FROM DB -->
   <p id="courseCount" class="text-2xl font-bold">0 Courses</p>
 </div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
+    <p class="text-sm text-gray-500 font-medium">Available Teachers</p>
+    <p id="teacherCount" class="text-3xl font-bold text-gray-800">0</p>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
+    <p class="text-sm text-gray-500 font-medium">Current Courses</p>
+    <p id="courseCount" class="text-3xl font-bold text-gray-800">0 Courses</p>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
+    <p class="text-sm text-gray-500 font-medium">Total Weekly Time</p>
+    <p id="totalHours" class="text-3xl font-bold text-gray-800">0 hrs</p>
+  </div>
+</div>
+
+
 
 <script>
 async function loadCourseCount() {

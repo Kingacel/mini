@@ -1,49 +1,163 @@
-<style>
-body{
-  font-family:Segoe UI;
-  background:linear-gradient(135deg,#00c6ff,#0072ff);
-  display:flex;
-  height:100vh;
-  justify-content:center;
-  align-items:center;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Manage Teachers | College Timetable</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
 
-.card{
-  background:white;
-  padding:40px;
-  border-radius:15px;
-  text-align:center;
-}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow">
+  <h2 class="text-xl font-bold mb-4">Add / Edit Teacher</h2>
 
-input{
-  padding:12px;
-  width:250px;
-  margin:10px;
-}
+  <form id="teacherForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <input type="hidden" id="teacherId">
 
-button{
-  padding:12px 20px;
-  background:#0072ff;
-  color:white;
-  border:none;
-  border-radius:8px;
-}
-</style>
+    <div>
+      <label class="text-xs font-bold text-gray-500 uppercase">Full Name</label>
+      <input id="name" required class="w-full border p-2 rounded" placeholder="Dr. Jane Doe">
+    </div>
 
+    <div>
+      <label class="text-xs font-bold text-gray-500 uppercase">Department</label>
+      <select id="dept_id" required class="w-full border p-2 rounded">
+        <option value="">Select Department</option>
+      </select>
+    </div>
 
+    <div>
+      <label class="text-xs font-bold text-gray-500 uppercase">Email Address</label>
+      <input id="email" type="email" required class="w-full border p-2 rounded" placeholder="jane@college.edu">
+    </div>
 
-<input id="name" placeholder="Name">
-<input id="dept" placeholder="Department">
+   
 
-<button onclick="save()">Save</button>
+    <div class="md:col-span-2">
+      <button id="saveBtn" type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+        Save Teacher
+      </button>
+    </div>
+  </form>
+
+  <h3 class="text-lg font-semibold mt-8 mb-3">Staff Directory</h3>
+  <div class="overflow-x-auto">
+    <table class="w-full border text-sm text-left">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="border p-2">Name</th>
+          <th class="border p-2">Email</th>
+          <th class="border p-2">Department</th>
+          <th class="border p-2 text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody id="teacherTable"></tbody>
+    </table>
+  </div>
+</div>
 
 <script>
-async function save(){
- await fetch('/teacher',{
-  method:'POST',
-  headers:{'Content-Type':'application/json'},
- 
- });
- alert("Added");
+const form = document.getElementById("teacherForm");
+const table = document.getElementById("teacherTable");
+const saveBtn = document.getElementById("saveBtn");
+const teacherIdInput = document.getElementById("teacherId");
+
+// 1. LOAD DEPARTMENTS FOR DROPDOWN
+async function loadDepartments() {
+  try {
+    const res = await fetch("/departments");
+    const depts = await res.json();
+    
+    // Log for debugging (Check this in F12 -> Console)
+    console.log("Departments loaded:", depts);
+
+    const select = document.getElementById("dept_id");
+    
+    // 1. Clear existing options
+    select.innerHTML = '<option value="">Select Department</option>';
+
+    // 2. Loop through results and use correct SQL column names
+    depts.forEach(d => {
+      // Based on your SQL: 'id' is the PK, 'name' is the dept name
+      const option = document.createElement("option");
+      option.value = d.id; 
+      option.textContent = d.name;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+  }
 }
+
+
+// 2. LOAD TEACHER LIST
+async function loadTeachers() {
+  const res = await fetch("/teachers");
+  const teachers = await res.json();
+  table.innerHTML = "";
+  teachers.forEach(t => {
+    table.innerHTML += `
+      <tr class="hover:bg-gray-50">
+        <td class="border p-2 font-medium">${t.name}</td>
+        <td class="border p-2">${t.email}</td>
+        <td class="border p-2">${t.dept_name || 'N/A'}</td>
+        <td class="border p-2 text-center">
+          <button class="text-blue-600 font-bold hover:underline" 
+                  onclick='editTeacher(${JSON.stringify(t)})'>Edit</button>
+        
+        
+                  </td>
+      </tr>`;
+  });
+}
+
+// 3. EDIT TEACHER
+function editTeacher(t) {
+  // Use .id or .teacher_id depending on your Backend JSON response
+  teacherIdInput.value = t.id || t.teacher_id; 
+  document.getElementById("name").value = t.name;
+  document.getElementById("email").value = t.email;
+  document.getElementById("dept_id").value = t.dept_id;
+  
+  saveBtn.textContent = "Update Teacher";
+  saveBtn.className = "bg-green-600 text-white px-6 py-2 rounded transition hover:bg-green-700";
+}
+
+// 4. SUBMIT FORM (POST/PUT)
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  
+  const id = teacherIdInput.value;
+  const url = id ? `/teacher/${id}` : '/teacher';
+  const method = id ? 'PUT' : 'POST';
+
+  // Professional JSON structure
+  const teacherData = {
+  name: document.getElementById("name").value,
+  email: document.getElementById("email").value,
+  dept_id: document.getElementById("dept_id").value
+ 
+};;
+
+  const response = await fetch(url, {
+    method: method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(teacherData)
+  });
+
+  if(response.ok) {
+    form.reset();
+    teacherIdInput.value = "";
+    saveBtn.textContent = "Save Teacher";
+    saveBtn.className = "bg-blue-600 text-white px-6 py-2 rounded transition hover:bg-blue-700";
+    loadTeachers();
+  } else {
+    alert("Error saving teacher data.");
+  }
+});
+
+// INIT
+loadDepartments();
+loadTeachers();
 </script>
+
+</body>
+</html>

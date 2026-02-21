@@ -112,29 +112,47 @@
     </div>
   </div>
 
-  <script>
+ <script>
 async function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  const msg = document.getElementById('msg');
 
-  const res = await fetch('/teacherlogin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
+  msg.innerText = "";
 
-  const data = await res.json();
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-  if (data.success) {
+    const data = await res.json();
 
-    /* ★ ADDED: store login info */
-    localStorage.setItem("userEmail", email);
-    localStorage.setItem("isAdmin", data.isAdmin); // ★ TRUE or FALSE
+    if (data.success) {
 
-    window.location = "admin.html";
-  } else {
-    document.getElementById('msg').innerText =
-      "Invalid user id or password";
+      // Store common info
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("userId", data.id);
+
+      // Redirect based on role
+      if (data.role === "admin") {
+        window.location.href = "admin.html";
+      } 
+      else if (data.role === "teacher") {
+        window.location.href = "teacher.html";
+      }
+
+    } else {
+      msg.style.color = "red";
+      msg.innerText = data.message || "Invalid email or password";
+    }
+
+  } catch (err) {
+    msg.style.color = "red";
+    msg.innerText = "Server error. Try again.";
+    console.error(err);
   }
 }
 </script>

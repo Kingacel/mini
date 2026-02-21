@@ -1,93 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Add Subject</title>
+  <title>Add Subject | 3NF Professional</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 p-8">
 
 <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow">
-
   <h2 class="text-xl font-bold mb-4">Add / Edit Subject</h2>
 
-  <!-- FORM -->
   <form id="subjectForm" class="space-y-4">
+    <input type="hidden" id="subjectId">
 
-    <!--  ADDED: hidden id for edit -->
-    <input type="hidden" name="id" id="subjectId">
+    <input id="name" required class="w-full border p-2 rounded" placeholder="Subject Name">
 
-    <input name="name" id="name" required
-           class="w-full border p-2 rounded"
-           placeholder="Subject Name">
+    <select id="dept_id" required class="w-full border p-2 rounded">
+      <option value="">Select Department</option>
+    </select>
 
-    <input name="dept" id="dept" required
-           class="w-full border p-2 rounded"
-           placeholder="Department">
+    <input id="sem" type="number" required class="w-full border p-2 rounded" placeholder="Semester">
 
-    <input name="sem" id="sem" required
-           class="w-full border p-2 rounded"
-           placeholder="Semester">
+    <input id="hours" type="number" min="1" required class="w-full border p-2 rounded" placeholder="Hours per week">
 
-    <input name="hours" id="hours" type="number" min="1" required
-           class="w-full border p-2 rounded"
-           placeholder="Hours per week">
-
-    <label class="flex items-center gap-2">
-      <input type="checkbox" name="lab" id="lab">
-      <span>Lab Subject</span>
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input type="checkbox" id="is_lab">
+      <span class="text-sm font-medium">Lab Subject</span>
     </label>
 
-    <!--  CHANGED: Save / Update button -->
-    <button id="saveBtn"
-      class="bg-blue-600 text-white px-4 py-2 rounded">
+    <button id="saveBtn" type="submit" class="bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700">
       Save Subject
     </button>
-
   </form>
 
-  <!-- SUBJECT LIST -->
   <h3 class="text-lg font-semibold mt-8 mb-3">Subjects List</h3>
-
-  <table class="w-full border text-sm">
+  <table class="w-full border text-sm text-left">
     <thead class="bg-gray-200">
       <tr>
         <th class="border p-2">Name</th>
         <th class="border p-2">Dept</th>
         <th class="border p-2">Sem</th>
         <th class="border p-2">Hours</th>
-        <th class="border p-2">Lab</th>
-        <th class="border p-2">Action</th>
+        <th class="border p-2 text-center">Lab</th>
+        <th class="border p-2 text-center">Action</th>
       </tr>
     </thead>
     <tbody id="subjectTable"></tbody>
   </table>
-
 </div>
 
 <script>
 const form = document.getElementById("subjectForm");
 const table = document.getElementById("subjectTable");
 const saveBtn = document.getElementById("saveBtn");
+const subjectId = document.getElementById("subjectId");
 
-//  LOAD SUBJECT LIST
+// 1. LOAD DEPARTMENTS (DYNAMIC)
+async function loadDepartments() {
+  const res = await fetch("/departments");
+  const depts = await res.json();
+  const select = document.getElementById("dept_id");
+  
+  // Clear existing options except the first one
+select.innerHTML = '<option value="">Select Department</option>';
+  depts.forEach(d => {
+    // FIX: Changed d.dept_id -> d.id AND d.dept_name -> d.name
+    select.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+  });
+}
+
+// 2. LOAD SUBJECT LIST
 async function loadSubjects() {
   const res = await fetch("/subjects");
   const subjects = await res.json();
-
   table.innerHTML = "";
 
   subjects.forEach(s => {
     table.innerHTML += `
-      <tr>
-        <td class="border p-2">${s.name}</td>
-        <td class="border p-2">${s.dept}</td>
-        <td class="border p-2">${s.sem}</td>
-        <td class="border p-2">${s.hours}</td>
-        <td class="border p-2">${s.lab ? "Yes" : "No"}</td>
-        <td class="border p-2">
-          <button class="text-blue-600"
-            onclick='editSubject(${JSON.stringify(s)})'>
+      <tr class="hover:bg-gray-50">
+        <td class="border p-2">${s.subject_name}</td>
+        <td class="border p-2">${s.dept_name || s.dept_id}</td>
+        <td class="border p-2">${s.semester}</td>
+        <td class="border p-2">${s.weekly_hours}</td>
+        <td class="border p-2 text-center">${s.is_lab ? "✅" : "❌"}</td>
+        <td class="border p-2 text-center">
+          <button class="text-blue-600 font-bold hover:underline" 
+                  onclick='editSubject(${JSON.stringify(s)})'>
             Edit
           </button>
         </td>
@@ -96,43 +94,54 @@ async function loadSubjects() {
   });
 }
 
-//  EDIT SUBJECT
+// 3. EDIT SUBJECT (FILL FORM)
 function editSubject(s) {
-  subjectId.value = s.id;
-  name.value = s.name;
-  dept.value = s.dept;
-  sem.value = s.sem;
-  hours.value = s.hours;
-  lab.checked = s.lab === 1;
+  subjectId.value = s.subject_id;
+  document.getElementById("name").value = s.subject_name;
+  document.getElementById("dept_id").value = s.dept_id;
+  document.getElementById("sem").value = s.semester;
+  document.getElementById("hours").value = s.weekly_hours;
+  document.getElementById("is_lab").checked = s.is_lab === 1;
 
   saveBtn.textContent = "Update Subject";
   saveBtn.classList.replace("bg-blue-600", "bg-green-600");
 }
 
-// SAVE / UPDATE
+// 4. SAVE / UPDATE (JSON FETCH)
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
   const id = subjectId.value;
-  const data = new FormData(form);
-
   const url = id ? `/subject/${id}` : "/subject";
   const method = id ? "PUT" : "POST";
 
+  // FIXED: Structured data object
+const data = {
+  name: document.getElementById("name").value,
+  dept_id: document.getElementById("dept_id").value, // Matches Foreign Key
+  sem: document.getElementById("sem").value,
+  hours: document.getElementById("hours").value,
+  is_lab: document.getElementById("is_lab").checked ? 1 : 0 // Matches BOOLEAN/TINYINT
+};
+
+
   await fetch(url, {
-    method,
-    body: data
+    method: method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
   });
 
+  // Reset UI
   form.reset();
   subjectId.value = "";
   saveBtn.textContent = "Save Subject";
-  saveBtn.classList.replace("bg-green-600", "bg-blue-600");
+  saveBtn.className = "bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700";
 
   loadSubjects();
 });
 
-// INITIAL LOAD
+// INITIALIZE PAGE
+loadDepartments();
 loadSubjects();
 </script>
 

@@ -1,6 +1,6 @@
 {
   "name": "sql-escaper",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "🛡️ Faster SQL escape and format for JavaScript (Node.js, Bun, and Deno).",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",
