@@ -78,11 +78,7 @@ async function loadSubjects() {
   subjects.forEach(s => {
     table.innerHTML += `
       <tr class="hover:bg-gray-50">
-        <td class="border p-2">${s.subject_name}</td>
-        <td class="border p-2">${s.dept_name || s.dept_id}</td>
-        <td class="border p-2">${s.semester}</td>
-        <td class="border p-2">${s.weekly_hours}</td>
-        <td class="border p-2 text-center">${s.is_lab ? "✅" : "❌"}</td>
+        <td class="border p-2">${s.name}</td>          <td class="border p-2">${s.dept_name}</td>     <td class="border p-2">${s.sem}</td>           <td class="border p-2">${s.hours}</td>         <td class="border p-2 text-center">${s.is_lab ? "YES" : "NO"}</td>
         <td class="border p-2 text-center">
           <button class="text-blue-600 font-bold hover:underline" 
                   onclick='editSubject(${JSON.stringify(s)})'>
@@ -93,20 +89,20 @@ async function loadSubjects() {
     `;
   });
 }
+//gentreator clean code
 
 // 3. EDIT SUBJECT (FILL FORM)
 function editSubject(s) {
-  subjectId.value = s.subject_id;
-  document.getElementById("name").value = s.subject_name;
+  subjectId.value = s.id;
+  document.getElementById("name").value = s.name;
   document.getElementById("dept_id").value = s.dept_id;
-  document.getElementById("sem").value = s.semester;
-  document.getElementById("hours").value = s.weekly_hours;
+  document.getElementById("sem").value = s.sem;
+  document.getElementById("hours").value = s.hours;
   document.getElementById("is_lab").checked = s.is_lab === 1;
 
   saveBtn.textContent = "Update Subject";
   saveBtn.classList.replace("bg-blue-600", "bg-green-600");
 }
-
 // 4. SAVE / UPDATE (JSON FETCH)
 form.addEventListener("submit", async e => {
   e.preventDefault();

@@ -31,6 +31,8 @@ tailwind.config = {
 <style>
 body { font-family: 'Lexend', sans-serif; }
 .admin-only { display: none; } /* hidden by default */
+.table-container::-webkit-scrollbar { height: 6px; }
+    .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 </style>
 
 </head>
@@ -109,39 +111,117 @@ body { font-family: 'Lexend', sans-serif; }
 
 <!-- ================= MAIN CONTENT ================= -->
 <main class="ml-64 flex-1 p-8">
+  <h1 class="text-3xl font-bold mb-6">Teacher Dashboard</h1>
 
-<h1 class="text-3xl font-bold mb-6">Teacher Dashboard</h1>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow border">
+      <p class="text-sm text-gray-500">Workload Capacity</p>
+      <p class="text-2xl font-bold">12 / 18 hrs/week</p>
+    </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-  <div class="bg-white p-6 rounded-xl shadow border">
-    <p class="text-sm text-gray-500">Workload Capacity</p>
-    <p class="text-2xl font-bold">12 / 18 hrs/week</p>
+    <div class="bg-white p-6 rounded-xl shadow border">
+      <p class="text-sm text-gray-500">Current Assignments</p>
+      <p id="assignmentCount" class="text-2xl font-bold">0 Courses</p>
+    </div>
+    
+    <div class="bg-white p-6 rounded-xl shadow border">
+      <p class="text-sm text-gray-500">System Status</p>
+      <p class="text-2xl font-bold text-green-600">Active</p>
+    </div>
   </div>
 
-  <div class="bg-white p-6 rounded-xl shadow border">
-  <p class="text-sm text-gray-500">Current Assignments</p>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
+      <p class="text-sm text-gray-500 font-medium">Available Teachers</p>
+      <p id="teacherCount" class="text-3xl font-bold text-gray-800">0</p>
+    </div>
 
+    <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
+      <p class="text-sm text-gray-500 font-medium">Current Courses</p>
+      <p id="courseCount" class="text-3xl font-bold text-gray-800">0 Courses</p>
+    </div>
 
-  <!-- THIS TEXT WILL CHANGE FROM DB -->
-  <p id="courseCount" class="text-2xl font-bold">0 Courses</p>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-  <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
-    <p class="text-sm text-gray-500 font-medium">Available Teachers</p>
-    <p id="teacherCount" class="text-3xl font-bold text-gray-800">0</p>
+    <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
+      <p class="text-sm text-gray-500 font-medium">Total Weekly Time</p>
+      <p id="totalHours" class="text-3xl font-bold text-gray-800">0 hrs</p>
+    </div>
   </div>
 
-  <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
-    <p class="text-sm text-gray-500 font-medium">Current Courses</p>
-    <p id="courseCount" class="text-3xl font-bold text-gray-800">0 Courses</p>
+  <div class="table-container overflow-x-auto border rounded-xl shadow-sm">
+    <table class="w-full border-collapse bg-white">
+      <thead>
+        <tr class="bg-white border-b text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+          <th class="p-4 border-r w-32 text-left bg-gray-100 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">1- Class</th>
+          <th class="p-4 border-r text-center bg-orange-50/30 text-orange-700">2- Monday</th>
+          <th class="p-4 border-r text-center bg-red-50/30 text-red-700">3- Tuesday</th>
+          <th class="p-4 border-r text-center bg-pink-50/30 text-pink-700">4- Wednesday</th>
+          <th class="p-4 border-r text-center bg-purple-50/30 text-purple-700">5- Thursday</th>
+          <th class="p-4 text-center bg-blue-50/30 text-blue-700">6- Friday</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-100">
+        <tr class="hover:bg-gray-50/50 transition">
+          <td class="p-4 border-r font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
+            S5 CSE A
+          </td>
+          <td class="p-2 border-r">
+            <div class="grid grid-cols-6 gap-1 min-w-[360px]">
+              <div class="period-cell"><b>P1</b><br>CST301</div>
+              <div class="period-cell"><b>P2</b><br>CST303</div>
+              <div class="period-cell"><b>P3</b><br>CST305</div>
+              <div class="period-cell"><b>P4</b><br>CST307</div>
+              <div class="period-cell bg-green-50 border-green-100"><b>P5</b><br>LAB</div>
+              <div class="period-cell bg-green-50 border-green-100"><b>P6</b><br>LAB</div>
+            </div>
+          </td>
+          <td class="p-2 border-r">
+             <div class="grid grid-cols-6 gap-1 min-w-[360px]"></div>
+          </td>
+          <td class="p-2 border-r text-center text-gray-300 italic text-[10px]">Syncing...</td>
+          <td class="p-2 border-r text-center text-gray-300 italic text-[10px]">Syncing...</td>
+          <td class="p-2 text-center text-gray-300 italic text-[10px]">Syncing...</td>
+        </tr>
+
+        <tr class="hover:bg-gray-50/50 transition">
+          <td class="p-4 border-r font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
+            S5 CSE B
+          </td>
+          <td class="p-2 border-r">
+            <div class="grid grid-cols-6 gap-1 min-w-[360px]">
+              <div class="period-cell"><b>P1</b><br>CST305</div>
+              <div class="period-cell"><b>P2</b><br>CST301</div>
+              <div class="period-cell"><b>P3</b><br>CST307</div>
+              <div class="period-cell"><b>P4</b><br>CST303</div>
+              <div class="period-cell"><b>P5</b><br>HUT300</div>
+              <div class="period-cell"><b>P6</b><br>MNC301</div>
+            </div>
+          </td>
+          <td colspan="5" class="bg-gray-50/30 text-center text-[10px] text-gray-400">Rest of Week Pending</td>
+        </tr>
+
+        <tr class="hover:bg-gray-50/50 transition">
+          <td class="p-4 border-r font-bold text-gray-700 bg-blue-50/30 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
+            S8 CSE
+          </td>
+          <td class="p-2 border-r">
+            <div class="grid grid-cols-6 gap-1 min-w-[360px]">
+              <div class="period-cell bg-purple-50 border-purple-100"><b>P1-P6</b><br>MAIN PROJECT (SOP/VPR)</div>
+            </div>
+          </td>
+          <td colspan="5" class="p-2 text-center text-[10px] text-purple-600 font-medium bg-purple-50/10 uppercase tracking-widest">Project Phase II Schedule</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
-    <p class="text-sm text-gray-500 font-medium">Total Weekly Time</p>
-    <p id="totalHours" class="text-3xl font-bold text-gray-800">0 hrs</p>
+  <div class="bg-white p-6 rounded-xl shadow border mt-8">
+    <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
+    <p class="text-gray-600">
+      Use the sidebar to manage teachers, subjects, and generate timetable automatically.
+    </p>
   </div>
+</main>
 </div>
 
 
@@ -182,6 +262,7 @@ loadCourseCount();
 
 <!-- ================= SCRIPT ================= -->
 <script>
+
 /* ROLE CHECK */
 const isAdmin = localStorage.getItem("isAdmin") === "true";
 
@@ -199,6 +280,11 @@ async function generate(){
     alert("Error generating timetable");
   }
 }
+
+//clean generator code
+.period-cell {
+        @apply p-1.5 bg-blue-50 border border-blue-100 rounded text-[10px] text-center flex flex-col justify-center min-h-[45px] transition-colors hover:bg-white;
+    }
 </script>
 
 </body>

@@ -242,35 +242,44 @@ app.get("/stats/subjects", (req, res) => {
   });
 });
 
-
-// ================= TIMETABLE =================
+// ================= FIXED TIMETABLE GENERATOR =================
 app.post("/generate", (req, res) => {
-  db.query("DELETE FROM timetable", () => {
+  // 1. Clear old timetable
+  db.query("DELETE FROM timetable", (err) => {
+    if (err) return res.status(500).json({ success: false, message: "Clear failed" });
+
+    // 2. Get all subjects
     db.query("SELECT * FROM subjects", (err, subjects) => {
-      if (err) return res.json({ success: false });
+      if (err || subjects.length === 0) {
+        return res.json({ success: false, message: "No subjects found to generate" });
+      }
 
-      const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
       let period = 1;
+      let dayIndex = 0;
 
-      subjects.forEach((s, i) => {
-        db.query(
-          "INSERT INTO timetable (day, period, subject) VALUES (?,?,?)",
-          [days[i % 5], period++, s.name]
-        );
+      // 3. Create insertions for each subject
+      // We map the subject data to the specific table columns
+      const values = subjects.map((s, i) => {
+        const day = days[i % 5];
+        const p = (Math.floor(i / 5) % 6) + 1; // Cycles through periods 1-6
+        
+        // Match column order: (dept_id, sem, day, period, subject_id, teacher_id)
+        return [s.dept_id, s.sem, day, p, s.id, null]; 
       });
 
-      res.json({ message: "Timetable Generated Successfully" });
+      const sql = "INSERT INTO timetable (dept_id, sem, day, period, subject_id, teacher_id) VALUES ?";
+      
+      db.query(sql, [values], (err) => {
+        if (err) {
+          console.error("Generation Error:", err);
+          return res.status(500).json({ success: false, message: "Database insertion failed" });
+        }
+        res.json({ success: true, message: "Timetable Generated Successfully!" });
+      });
     });
   });
 });
-
-app.get("/timetable", (req, res) => {
-  db.query("SELECT * FROM timetable", (err, result) => {
-    if (err) return res.json([]);
-    res.json(result);
-  });
-});
-
 
 // ================= SERVER =================
 app.listen(3000, () => {
