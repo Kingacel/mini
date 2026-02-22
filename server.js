@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const db = require("./db");
+const db = require("./db.js");
 
 const app = express();
 
@@ -13,59 +13,59 @@ app.use(express.static("public"));
 // ================= LOGIN =================
 
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // 1️⃣ Check ADMIN
-    const adminSql = "SELECT id FROM admins WHERE email=? AND password=?";
-    db.query(adminSql, [email, password], (err, adminResult) => {
-        if (err) return res.status(500).json(err);
+  // 1️⃣ Check ADMIN
+  const adminSql = "SELECT id FROM admins WHERE email=? AND password=?";
+  db.query(adminSql, [email, password], (err, adminResult) => {
+    if (err) return res.status(500).json(err);
 
-        if (adminResult.length > 0) {
-            return res.json({
-                success: true,
-                role: "admin",
-                id: adminResult[0].id
-            });
-        }
+    if (adminResult.length > 0) {
+      return res.json({
+        success: true,
+        role: "admin",
+        id: adminResult[0].id
+      });
+    }
 
-        // 2️⃣ Check TEACHER
-        const teacherSql =
-          "SELECT id, dept_id FROM teachers WHERE email=? AND password=?";
-        db.query(teacherSql, [email, password], (err, teacherResult) => {
-            if (err) return res.status(500).json(err);
+    // 2️⃣ Check TEACHER
+    const teacherSql =
+      "SELECT id, dept_id FROM teachers WHERE email=? AND password=?";
+    db.query(teacherSql, [email, password], (err, teacherResult) => {
+      if (err) return res.status(500).json(err);
 
-            if (teacherResult.length > 0) {
-                return res.json({
-                    success: true,
-                    role: "teacher",
-                    id: teacherResult[0].id,
-                    dept_id: teacherResult[0].dept_id
-                });
-            }
-
-            // 3️⃣ Invalid credentials
-            res.status(401).json({
-                success: false,
-                message: "Invalid email or password"
-            });
+      if (teacherResult.length > 0) {
+        return res.json({
+          success: true,
+          role: "teacher",
+          id: teacherResult[0].id,
+          dept_id: teacherResult[0].dept_id
         });
+      }
+
+      // 3️⃣ Invalid credentials
+      res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
     });
+  });
 });
 
 // ================= ADMIN =================
 app.post('/admins', (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    const sql = "SELECT id FROM admins WHERE email=? AND password=?";
-    db.query(sql, [email, password], (err, result) => {
-        if (err) return res.status(500).json(err);
+  const sql = "SELECT id FROM admins WHERE email=? AND password=?";
+  db.query(sql, [email, password], (err, result) => {
+    if (err) return res.status(500).json(err);
 
-        if (result.length > 0) {
-            res.json({ success: true });
-        } else {
-            res.status(401).json({ success: false, message: "Invalid credentials" });
-        }
-    });
+    if (result.length > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+  });
 });
 // ================= TEACHERS CRUD =================
 
@@ -95,64 +95,26 @@ app.put("/teacher/:id", (req, res) => {
   });
 });
 // DELECT teacher
-
-/* ADD teacher
-app.post("/teacher", (req, res) => {
-  const { name, dept, email, password } = req.body; // ✅ FIXED: password added
-
-  if (!name || !dept || !email || !password) {
-    return res.status(400).json({ error: "All fields required" });
-  }
-
-  db.query(
-    "INSERT INTO teachers (name, dept, email, password) VALUES (?, ?, ?, ?)",
-    [name, dept, email, password],
-    (err) => {
-      if (err) return res.status(500).json({ error: "Insert failed" });
-      res.json({ success: true });
-    }
-  );
-});
-
-// UPDATE teacher
-app.put("/teacher/:id", (req, res) => {
-  const { name, dept, email } = req.body;
-
-  db.query(
-    "UPDATE teachers SET name=?, dept=?, email=? WHERE id=?",
-    [name, dept, email, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json({ error: "Update failed" });
-      res.json({ success: true });
-    }
-  );
-});
-
-// DELETE teacher
 app.delete("/teacher/:id", (req, res) => {
-  db.query(
-    "DELETE FROM teachers WHERE id=?",
-    [req.params.id],
-    (err) => {
-      if (err) return res.status(500).json({ error: "Delete failed" });
-      res.json({ success: true });
-    }
-  );
+  db.query("DELETE FROM teachers WHERE id=?", [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: "Delete failed" });
+    res.json({ success: true });
+  });
 });
-*/
+
 //=================aDepratment ==================
 
 app.get('/departments', (req, res) => {
-    // We use your specific column names: id and name
-    const sql = "SELECT id, name FROM departments";
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json(err);
-        res.json(results);
-    });
+  // We use your specific column names: id and name
+  const sql = "SELECT id, name FROM departments";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json(err);
+    res.json(results);
+  });
 });
 
 app.get('/teachers', (req, res) => {
-    const sql = `
+  const sql = `
         SELECT 
           teachers.id AS teacher_id,
           teachers.name,
@@ -161,10 +123,10 @@ app.get('/teachers', (req, res) => {
         FROM teachers
         LEFT JOIN departments ON teachers.dept_id = departments.id
     `;
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json(err);
-        res.json(results);
-    });
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json(err);
+    res.json(results);
+  });
 });
 
 
@@ -175,7 +137,7 @@ app.get("/subjects", (req, res) => {
     SELECT subjects.*, departments.name AS dept_name 
     FROM subjects 
     JOIN departments ON subjects.dept_id = departments.id`;
-    
+
   db.query(sql, (err, result) => {
     if (err) return res.status(500).json([]);
     res.json(result);
@@ -223,7 +185,7 @@ app.post("/subject", (req, res) => {
 
   // Use the exact column names from your CREATE TABLE subjects
   const sql = "INSERT INTO subjects (name, dept_id, sem, hours, is_lab) VALUES (?, ?, ?, ?, ?)";
-  
+
   db.query(sql, [name, dept_id, sem, hours, is_lab], (err, result) => {
     if (err) {
       console.error("DB Error:", err);
@@ -270,141 +232,164 @@ app.get('/teachers/count', (req, res) => {
     }
   );
 });
+// ================= TIMETABLE CRUD =================
+app.get('/timetable', (req, res) => {
+  const sql = `
+    SELECT 
+      t.day, t.period, t.sem,
+      d.name AS dept_name,
+      s.name AS subject_name, s.is_lab,
+      tr.name AS teacher_name
+    FROM timetable t
+    JOIN departments d ON t.dept_id = d.id
+    JOIN subjects s ON t.subject_id = s.id
+    JOIN teachers tr ON t.teacher_id = tr.id
+    ORDER BY t.sem, t.day, t.period
+  `;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+});
+
 // ================= FIXED TIMETABLE GENERATOR =================
 // ================= GENERATE TIMETABLE =================
-app.post('/generate', (req, res) => {  
+app.post('/generate', (req, res) => {
 
-    const { dept, sem } = req.body;    
+  const { dept, sem } = req.body;
 
-    if (!dept || !sem) {
-        return res.json({ success:false, message:"Send dept & sem" });
-    }
+  if (!dept || !sem) {
+    return res.json({ success: false, message: "Send dept & sem" });
+  }
 
-    const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
-    const MAX_PERIODS = 6;
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  const MAX_PERIODS = 6;
 
-    // timetable grid
-    let grid = {};
-    DAYS.forEach(day => {
-        grid[day] = new Array(MAX_PERIODS).fill(null);
-    });
+  // timetable grid
+  let grid = {};
+  DAYS.forEach(day => {
+    grid[day] = new Array(MAX_PERIODS).fill(null);
+  });
 
-    // shuffle helper
-    function shuffle(arr){
-        return arr.sort(() => Math.random() - 0.5);
-    }
+  // shuffle helper
+  function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+  }
 
-    // clear old timetable
-    db.query(
-      "DELETE FROM timetable WHERE dept_id=? AND sem=?",   // 🔴 CHANGED: dept → dept_id
-      [dept, sem],
-      (err) => {
+  // clear old timetable
+  db.query(
+    "DELETE FROM timetable WHERE dept_id=? AND sem=?",   // 🔴 CHANGED: dept → dept_id
+    [dept, sem],
+    (err) => {
 
-        if(err) return res.json({ success:false, message:"Delete failed" });
+      if (err) return res.json({ success: false, message: "Delete failed" });
 
-        // get subjects
-        db.query(
-            "SELECT * FROM subjects WHERE dept_id=? AND sem=?", // 🔴 CHANGED: dept → dept_id
-            [dept, sem],
-            (err, subjects) => {
+      // get subjects
+      db.query(
+        "SELECT * FROM subjects WHERE dept_id=? AND sem=?", // 🔴 CHANGED: dept → dept_id
+        [dept, sem],
+        (err, subjects) => {
 
-                if(err) return res.json({ success:false });
+          if (err) return res.json({ success: false });
 
-                if(subjects.length === 0)
-                    return res.json({ success:false, message:"No subjects found" });
+          if (subjects.length === 0)
+            return res.json({ success: false, message: "No subjects found" });
 
-                subjects = shuffle(subjects);
+          subjects = shuffle(subjects);
 
-                // ================= PLACE SUBJECTS =================
-                subjects.forEach(sub => {
+          // ================= PLACE SUBJECTS =================
+          subjects.forEach(sub => {
 
-                    // ===== LAB (3 continuous hours) =====
-                    if(sub.lab == 1){
+            // ===== LAB (3 continuous hours) =====
+            if (sub.is_lab == 1) {
 
-                        let placed = false;
-                        let attempts = 0;               // 🔴 CHANGED: safety counter
+              let placed = false;
+              let attempts = 0;               // 🔴 CHANGED: safety counter
 
-                        while(!placed && attempts < 100){
-                            attempts++;
+              while (!placed && attempts < 100) {
+                attempts++;
 
-                            let day = DAYS[Math.floor(Math.random()*5)];
-                            let start = Math.floor(Math.random()*4); // 0–3
+                let day = DAYS[Math.floor(Math.random() * 5)];
+                let start = Math.floor(Math.random() * 4); // 0–3
 
-                            if(
-                                !grid[day][start] &&
-                                !grid[day][start+1] &&
-                                !grid[day][start+2]
-                            ){
-                                for(let i=0;i<3;i++){
-                                    grid[day][start+i] = {
-                                        subject_id: sub.id,       // 🔴 CHANGED: store IDs
-                                        teacher_id: sub.teacher_id
-                                    };
-                                }
-                                placed = true;
-                            }
-                        }
-                    }
+                if (
+                  !grid[day][start] &&
+                  !grid[day][start + 1] &&
+                  !grid[day][start + 2]
+                ) {
+                  for (let i = 0; i < 3; i++) {
+                    grid[day][start + i] = {
+                      subject_id: sub.id,       // 🔴 CHANGED: store IDs
+                      teacher_id: sub.teacher_id
+                    };
+                  }
+                  placed = true;
+                }
+              }
+            }
 
-                    // ===== THEORY =====
-                    else{
-                        for(let h=0; h<sub.hours; h++){
+            // ===== THEORY =====
+            else {
+              for (let h = 0; h < sub.hours; h++) {
 
-                            let placed = false;
-                            let attempts = 0;           // 🔴 CHANGED: safety counter
+                let placed = false;
+                let attempts = 0;           // 🔴 CHANGED: safety counter
 
-                            while(!placed && attempts < 100){
-                                attempts++;
+                while (!placed && attempts < 100) {
+                  attempts++;
 
-                                let day = DAYS[Math.floor(Math.random()*5)];
-                                let p = Math.floor(Math.random()*6);
+                  let day = DAYS[Math.floor(Math.random() * 5)];
+                  let p = Math.floor(Math.random() * 6);
 
-                                if(!grid[day][p]){
-                                    grid[day][p] = {
-                                        subject_id: sub.id,       // 🔴 CHANGED
-                                        teacher_id: sub.teacher_id
-                                    };
-                                    placed = true;
-                                }
-                            }
-                        }
-                    }
-                });
+                  if (!grid[day][p]) {
+                    grid[day][p] = {
+                      subject_id: sub.id,       // 🔴 CHANGED
+                      teacher_id: sub.teacher_id
+                    };
+                    placed = true;
+                  }
+                }
+              }
+            }
+          });
 
-                // ================= INSERT INTO DB =================
-                let values = [];
+          // ================= INSERT INTO DB =================
+          let values = [];
 
-                DAYS.forEach(day => {
-                    grid[day].forEach((cell, index) => {
-                        if(cell){
-                            values.push([
-                                dept,
-                                sem,
-                                day,
-                                index + 1,               // 🔴 CHANGED: period starts from 1
-                                cell.subject_id,
-                                cell.teacher_id,
-                                0
-                            ]);
-                        }
-                    });
-                });
+          DAYS.forEach(day => {
+            grid[day].forEach((cell, index) => {
+              if (cell) {
+                values.push([
+                  dept,
+                  sem,
+                  day,
+                  index + 1,               // 🔴 CHANGED: period starts from 1
+                  cell.subject_id,
+                  cell.teacher_id,
+                  0
+                ]);
+              }
+            });
+          });
 
-                db.query(
-                    `INSERT INTO timetable
+          db.query(
+            `INSERT INTO timetable
                      (dept_id, sem, day, period, subject_id, teacher_id, fixed)
                      VALUES ?`,
-                    [values],
-                    (err) => {
-                        if(err){
-                            console.log(err);
-                            return res.json({ success:false, message:"Insert failed" });
-                        }
-                        res.json({ success:true, message:"Timetable generated successfully" });
-                    }
-                );
+            [values],
+            (err) => {
+              if (err) {
+                console.log(err);
+                return res.json({ success: false, message: "Insert failed" });
+              }
+              res.json({ success: true, message: "Timetable generated successfully" });
             }
-        );
+          );
+        }
+      );
     });
 });
 // ================= SERVER =================

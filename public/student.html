@@ -1,165 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KTU Timetable Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KTU Timetable Admin</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-<style>
-@media print {
-  button, select { display: none !important; }
-}
-.subject-badge {
-  padding: 5px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-}
-.teacher-name {
-  font-size: 11px;
-}
-</style>
+  <style>
+    @media print {
+
+      button,
+      select {
+        display: none !important;
+      }
+    }
+
+    .subject-badge {
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .teacher-name {
+      font-size: 11px;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 
-<div class="max-w-7xl mx-auto p-6">
+  <div class="max-w-7xl mx-auto p-6">
 
-<h1 class="text-3xl font-bold mb-8 text-center text-blue-700">
-KTU Timetable – Admin Panel
-</h1>
+    <h1 class="text-3xl font-bold mb-8 text-center text-blue-700">
+      KTU Timetable – Admin Panel
+    </h1>
 
-<!-- FILTER -->
-<div class="grid md:grid-cols-4 gap-6 mb-8 bg-white p-6 rounded-xl shadow">
+    <!-- FILTER -->
+    <div class="grid md:grid-cols-4 gap-6 mb-8 bg-white p-6 rounded-xl shadow">
 
-<div>
-<label class="block text-sm font-semibold mb-2">Branch</label>
-<select id="branch" onchange="generateTimetable()" class="w-full p-3 border rounded-lg">
-<option value="CSE">CSE</option>
-</select>
-</div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Branch</label>
+        <select id="branch" onchange="generateTimetable()" class="w-full p-3 border rounded-lg">
+          <option value="CSE">CSE</option>
+        </select>
+      </div>
 
 
-<div>
-<label class="block text-sm font-semibold mb-2">Semester</label>
-<select id="semester" onchange="generateTimetable()" class="w-full p-3 border rounded-lg">
-<option value="1">Semester 1</option>
-<option value="2">Semester 2</option>
-<option value="3">Semester 3</option>
-<option value="4">Semester 4</option>
-<option value="5">Semester 5</option>
-<option value="6">Semester 6</option>
-<option value="7">Semester 7</option>
-<option value="8">Semester 8</option>
-</select>
-</div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Semester</label>
+        <select id="semester" onchange="generateTimetable()" class="w-full p-3 border rounded-lg">
+          <option value="1">Semester 1</option>
+          <option value="2">Semester 2</option>
+          <option value="3">Semester 3</option>
+          <option value="4">Semester 4</option>
+          <option value="5">Semester 5</option>
+          <option value="6">Semester 6</option>
+          <option value="7">Semester 7</option>
+          <option value="8">Semester 8</option>
+        </select>
+      </div>
 
-<div class="flex items-end">
-<button onclick="window.print()" class="w-full bg-blue-600 text-white py-3 rounded-lg">
-Print / Download
-</button>
-</div>
+      <div class="flex items-end">
+        <button onclick="window.print()" class="w-full bg-blue-600 text-white py-3 rounded-lg">
+          Print / Download
+        </button>
+      </div>
 
-</div>
+    </div>
 
-<!-- TIMETABLE -->
-<div class="overflow-x-auto bg-white rounded-xl shadow">
-<table class="min-w-full border text-center">
-<thead class="bg-gray-200">
-<tr>
-<th class="border p-3">Day</th>
-<th class="border p-3">I</th>
-<th class="border p-3">II</th>
-<th class="border p-3">III</th>
-<th class="border p-3">IV</th>
-<th class="border p-3">V</th>
-<th class="border p-3">VI</th>
-</tr>
-</thead>
-<tbody id="timetableBody"></tbody>
-</table>
-</div>
+    <!-- TIMETABLE -->
+    <div class="overflow-x-auto bg-white rounded-xl shadow">
+      <table class="min-w-full border text-center">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border p-3">Day</th>
+            <th class="border p-3">I</th>
+            <th class="border p-3">II</th>
+            <th class="border p-3">III</th>
+            <th class="border p-3">IV</th>
+            <th class="border p-3">V</th>
+            <th class="border p-3">VI</th>
+          </tr>
+        </thead>
+        <tbody id="timetableBody"></tbody>
+      </table>
+    </div>
 
-</div>
+  </div>
 
-<script>
-//  Colors
-const subjectColors = {
-  CST304:"bg-blue-600",
-  CST203:"bg-green-600",
-  CST205:"bg-purple-600",
-  CSL332:"bg-yellow-500",
-  CSD334:"bg-red-600"
-};
+  <script>
+    //  Colors
+    const subjectColors = {
+      CST304: "bg-blue-600",
+      CST203: "bg-green-600",
+      CST205: "bg-purple-600",
+      CSL332: "bg-yellow-500",
+      CSD334: "bg-red-600"
+    };
 
-//  Timetable Data (Branch → Batch → Semester)
-const timetableData = {
-  CSE: {
-    2021: {
-      3: {
-        Monday: [
-          [{code:"CST304", teacher:"Deepa"}],
-          [{code:"CSD334", teacher:"Shibu"}],
-          [{code:"CSL332", teacher:"Keerthana"}],
-          [],
-          [{code:"CST203", teacher:"Arun"}],
-          [{code:"CST205", teacher:"Meera"}]
-        ],
-        Tuesday: [[],[],[],[],[],[]],
-        Wednesday: [[],[],[],[],[],[]],
-        Thursday: [[],[],[],[],[],[]],
-        Friday: [[],[],[],[],[],[]]
+    //  Timetable Data (Branch → Batch → Semester)
+    const timetableData = {
+      CSE: {
+        3: {
+          Monday: [
+            [{ code: "CST304", teacher: "Deepa" }],
+            [{ code: "CSD334", teacher: "Shibu" }],
+            [{ code: "CSL332", teacher: "Keerthana" }],
+            [],
+            [{ code: "CST203", teacher: "Arun" }],
+            [{ code: "CST205", teacher: "Meera" }]
+          ],
+          Tuesday: [[], [], [], [], [], []],
+          Wednesday: [[], [], [], [], [], []],
+          Thursday: [[], [], [], [], [], []],
+          Friday: [[], [], [], [], [], []]
+        }
       }
-    }
-  }
-};
+    };
 
-function generateTimetable() {
-  const branch = branchEl.value;
-  const batch = batchEl.value;
-  const sem = semesterEl.value;
-  const body = timetableBody;
+    function generateTimetable() {
+      const branch = branchEl.value;
+      const sem = semesterEl.value;
+      const body = timetableBody;
 
-  body.innerHTML = "";
+      body.innerHTML = "";
 
-  const schedule = timetableData[branch]?.[batch]?.[sem];
-  if (!schedule) {
-    body.innerHTML = `<tr><td colspan="7" class="p-6 text-gray-400">
+      const schedule = timetableData[branch]?.[sem];
+      if (!schedule) {
+        body.innerHTML = `<tr><td colspan="7" class="p-6 text-gray-400">
       No timetable available
     </td></tr>`;
-    return;
-  }
+        return;
+      }
 
-  Object.entries(schedule).forEach(([day, slots]) => {
-    let row = `<tr>
+      Object.entries(schedule).forEach(([day, slots]) => {
+        let row = `<tr>
       <td class="border p-3 font-semibold">${day}</td>`;
-    slots.forEach(slot => {
-      row += `<td class="border p-2 align-top">`;
-      if (slot.length === 0) row += "—";
-      slot.forEach(s => {
-        row += `
+        slots.forEach(slot => {
+          row += `<td class="border p-2 align-top">`;
+          if (slot.length === 0) row += "—";
+          slot.forEach(s => {
+            row += `
         <div class="mb-2">
           <div class="subject-badge ${subjectColors[s.code]}">${s.code}</div>
           <div class="teacher-name">${s.teacher}</div>
         </div>`;
+          });
+          row += `</td>`;
+        });
+        row += `</tr>`;
+        body.innerHTML += row;
       });
-      row += `</td>`;
-    });
-    row += `</tr>`;
-    body.innerHTML += row;
-  });
-}
+    }
 
-const branchEl = document.getElementById("branch");
-const batchEl = document.getElementById("batch");
-const semesterEl = document.getElementById("semester");
-const timetableBody = document.getElementById("timetableBody");
+    const branchEl = document.getElementById("branch");
+    const semesterEl = document.getElementById("semester");
+    const timetableBody = document.getElementById("timetableBody");
 
-generateTimetable();
-</script>
+    generateTimetable();
+  </script>
 
 </body>
+
 </html>

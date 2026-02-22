@@ -1,273 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Teacher Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Dashboard</title>
 
-<!-- Tailwind -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        primary: "#135bec",
-        "background-light": "#f6f6f8",
-      },
-      fontFamily: {
-        display: ["Lexend"]
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#135bec",
+            "background-light": "#f6f6f8",
+          },
+          fontFamily: {
+            display: ["Lexend"]
+          }
+        }
       }
     }
-  }
-}
-</script>
+  </script>
 
-<style>
-body { font-family: 'Lexend', sans-serif; }
-.admin-only { display: none; } /* hidden by default */
-.table-container::-webkit-scrollbar { height: 6px; }
-    .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-</style>
+  <style>
+    body {
+      font-family: 'Lexend', sans-serif;
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    /* hidden by default */
+    .table-container::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+  </style>
 
 </head>
 
 <body class="bg-background-light min-h-screen text-[#111318]">
 
-<div class="flex min-h-screen">
+  <div class="flex min-h-screen">
 
-<!-- ================= SIDEBAR ================= -->
-<aside class="w-64 bg-white border-r border-gray-200 fixed h-full">
-  <div class="p-6 flex flex-col h-full">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="w-64 bg-white border-r border-gray-200 fixed h-full">
+      <div class="p-6 flex flex-col h-full">
 
-    <!-- Profile -->
-    <div class="flex items-center gap-3 mb-8">
-      <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-        <span class="material-symbols-outlined">person</span>
-      </div>
-      <div>
-        <h2 class="text-sm font-semibold">Teacher Panel</h2>
-        <p class="text-xs text-gray-500">Admin Dashboard</p>
-      </div>
-    </div>
+        <!-- Profile -->
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined">person</span>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold">Teacher Panel</h2>
+            <p class="text-xs text-gray-500">Admin Dashboard</p>
+          </div>
+        </div>
 
-    <!-- Navigation -->
-    <nav class="flex flex-col gap-2 flex-1">
+        <!-- Navigation -->
+        <nav class="flex flex-col gap-2 flex-1">
 
-      <!-- ADMIN ONLY -->
-      <a href="addteacher.html"
-         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
-        <span class="material-symbols-outlined">person_add</span>
-        <span>Add Teacher</span>
-      </a>
+          <!-- ADMIN ONLY -->
+          <a href="addteacher.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">person_add</span>
+            <span>Add Teacher</span>
+          </a>
 
-      <a href="manageteachers.html"
-         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
-        <span class="material-symbols-outlined">groups</span>
-        <span>Manage Teachers</span>
-      </a>
+          <a href="manageteachers.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">groups</span>
+            <span>Manage Teachers</span>
+          </a>
 
-      <a href="addsubject.html"
-         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
-        <span class="material-symbols-outlined">menu_book</span>
-        <span>Add Subject</span>
-      </a>
+          <a href="addsubject.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">menu_book</span>
+            <span>Add Subject</span>
+          </a>
 
-      <a href="managesubjects.html"
-         class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
-        <span class="material-symbols-outlined">library_books</span>
-        <span>Manage Subjects</span>
-      </a>
+          <a href="managesubjects.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">library_books</span>
+            <span>Manage Subjects</span>
+          </a>
 
-      <button onclick="generate()"
-        class="admins-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition text-left">
-        <span class="material-symbols-outlined">auto_awesome</span>
-        <span>Generate Timetable</span>
-      </button>
+          <button onclick="generate()"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition text-left">
+            <span class="material-symbols-outlined">auto_awesome</span>
+            <span>Generate Timetable</span>
+          </button>
 
-      <!-- BOTH ADMIN & TEACHER -->
-      <a href="timetable.html"
-         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
-        <span class="material-symbols-outlined">calendar_month</span>
-        <span>View Timetable</span>
-      </a>
+          <!-- BOTH ADMIN & TEACHER -->
+          <a href="timetable.html"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span>View Timetable</span>
+          </a>
 
-      <button onclick="publishTimetable()"
-        class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg
+          <button onclick="publishTimetable()" class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg
          hover:bg-green-100 hover:text-green-700 transition text-left">
-     <span class="material-symbols-outlined">publish</span>
-        <span>Publish Timetable</span>
-    </button>
+            <span class="material-symbols-outlined">publish</span>
+            <span>Publish Timetable</span>
+          </button>
 
 
-    </nav>
-  </div>
-</aside>
+        </nav>
+      </div>
+    </aside>
 
-<!-- ================= MAIN CONTENT ================= -->
-<main class="ml-64 flex-1 p-8">
-  <h1 class="text-3xl font-bold mb-6">Teacher Dashboard</h1>
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="ml-64 flex-1 p-8">
+      <h1 class="text-3xl font-bold mb-6">ADMIN Dashboard</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-xl shadow border">
-      <p class="text-sm text-gray-500">Workload Capacity</p>
-      <p class="text-2xl font-bold">12 / 18 hrs/week</p>
-    </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500">Workload Capacity</p>
+          <p class="text-2xl font-bold">12 / 18 hrs/week</p>
+        </div>
 
-    <div class="bg-white p-6 rounded-xl shadow border">
-      <p class="text-sm text-gray-500">Current Assignments</p>
-      <p id="assignmentCount" class="text-2xl font-bold">0 Courses</p>
-    </div>
-    
-    <div class="bg-white p-6 rounded-xl shadow border">
-      <p class="text-sm text-gray-500">System Status</p>
-      <p class="text-2xl font-bold text-green-600">Active</p>
-    </div>
-  </div>
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500">Current Assignments</p>
+          <p id="assignmentCount" class="text-2xl font-bold">0 Courses</p>
+        </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
-      <p class="text-sm text-gray-500 font-medium">Available Teachers</p>
-      <p id="teacherCount" class="text-3xl font-bold text-gray-800">0</p>
-    </div>
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500">System Status</p>
+          <p class="text-2xl font-bold text-green-600">Active</p>
+        </div>
+      </div>
 
-    <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
-      <p class="text-sm text-gray-500 font-medium">Current Courses</p>
-      <p id="courseCount" class="text-3xl font-bold text-gray-800">0 Courses</p>
-    </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
+          <p class="text-sm text-gray-500 font-medium">Available Teachers</p>
+          <p id="teacherCount" class="text-3xl font-bold text-gray-800">0</p>
+        </div>
 
-    <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
-      <p class="text-sm text-gray-500 font-medium">Total Weekly Time</p>
-      <p id="totalHours" class="text-3xl font-bold text-gray-800">0 hrs</p>
-    </div>
-  </div>
+        <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
+          <p class="text-sm text-gray-500 font-medium">Current Courses</p>
+          <p id="courseCount" class="text-3xl font-bold text-gray-800">0 Courses</p>
+        </div>
 
-  <div class="table-container overflow-x-auto border rounded-xl shadow-sm">
-    <table class="w-full border-collapse bg-white">
-      <thead>
-        <tr class="bg-white border-b text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-          <th class="p-4 border-r w-32 text-left bg-gray-100 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">1- Class</th>
-          <th class="p-4 border-r text-center bg-orange-50/30 text-orange-700">2- Monday</th>
-          <th class="p-4 border-r text-center bg-red-50/30 text-red-700">3- Tuesday</th>
-          <th class="p-4 border-r text-center bg-pink-50/30 text-pink-700">4- Wednesday</th>
-          <th class="p-4 border-r text-center bg-purple-50/30 text-purple-700">5- Thursday</th>
-          <th class="p-4 text-center bg-blue-50/30 text-blue-700">6- Friday</th>
-        </tr>
-      </thead>
+        <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
+          <p class="text-sm text-gray-500 font-medium">Total Weekly Time</p>
+          <p id="totalHours" class="text-3xl font-bold text-gray-800">0 hrs</p>
+        </div>
+      </div>
 
-      <tbody class="divide-y divide-gray-100">
-        <tr class="hover:bg-gray-50/50 transition">
-          <td class="p-4 border-r font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
-            S5 CSE A
-          </td>
-          <td class="p-2 border-r">
-            <div class="grid grid-cols-6 gap-1 min-w-[360px]">
-              <div class="period-cell"><b>P1</b><br>CST301</div>
-              <div class="period-cell"><b>P2</b><br>CST303</div>
-              <div class="period-cell"><b>P3</b><br>CST305</div>
-              <div class="period-cell"><b>P4</b><br>CST307</div>
-              <div class="period-cell bg-green-50 border-green-100"><b>P5</b><br>LAB</div>
-              <div class="period-cell bg-green-50 border-green-100"><b>P6</b><br>LAB</div>
-            </div>
-          </td>
-          <td class="p-2 border-r">
-             <div class="grid grid-cols-6 gap-1 min-w-[360px]"></div>
-          </td>
-          <td class="p-2 border-r text-center text-gray-300 italic text-[10px]">Syncing...</td>
-          <td class="p-2 border-r text-center text-gray-300 italic text-[10px]">Syncing...</td>
-          <td class="p-2 text-center text-gray-300 italic text-[10px]">Syncing...</td>
-        </tr>
+      <div class="table-container overflow-x-auto border rounded-xl shadow-sm">
+        <table class="w-full border-collapse bg-white">
+          <thead>
+            <tr class="bg-white border-b text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              <th
+                class="p-4 border-r w-32 text-left bg-gray-100 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                1- Class</th>
+              <th class="p-4 border-r text-center bg-orange-50/30 text-orange-700">2- Monday</th>
+              <th class="p-4 border-r text-center bg-red-50/30 text-red-700">3- Tuesday</th>
+              <th class="p-4 border-r text-center bg-pink-50/30 text-pink-700">4- Wednesday</th>
+              <th class="p-4 border-r text-center bg-purple-50/30 text-purple-700">5- Thursday</th>
+              <th class="p-4 text-center bg-blue-50/30 text-blue-700">6- Friday</th>
+            </tr>
+          </thead>
 
-        <tr class="hover:bg-gray-50/50 transition">
-          <td class="p-4 border-r font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
-            S5 CSE B
-          </td>
-          <td class="p-2 border-r">
-            <div class="grid grid-cols-6 gap-1 min-w-[360px]">
-              <div class="period-cell"><b>P1</b><br>CST305</div>
-              <div class="period-cell"><b>P2</b><br>CST301</div>
-              <div class="period-cell"><b>P3</b><br>CST307</div>
-              <div class="period-cell"><b>P4</b><br>CST303</div>
-              <div class="period-cell"><b>P5</b><br>HUT300</div>
-              <div class="period-cell"><b>P6</b><br>MNC301</div>
-            </div>
-          </td>
-          <td colspan="5" class="bg-gray-50/30 text-center text-[10px] text-gray-400">Rest of Week Pending</td>
-        </tr>
+          <tbody id="timetable-body" class="divide-y divide-gray-100">
+            <!-- Dynamic Data -->
+          </tbody>
+        </table>
+      </div>
 
-        <tr class="hover:bg-gray-50/50 transition">
-          <td class="p-4 border-r font-bold text-gray-700 bg-blue-50/30 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
-            S8 CSE
-          </td>
-          <td class="p-2 border-r">
-            <div class="grid grid-cols-6 gap-1 min-w-[360px]">
-              <div class="period-cell bg-purple-50 border-purple-100"><b>P1-P6</b><br>MAIN PROJECT (SOP/VPR)</div>
-            </div>
-          </td>
-          <td colspan="5" class="p-2 text-center text-[10px] text-purple-600 font-medium bg-purple-50/10 uppercase tracking-widest">Project Phase II Schedule</td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="bg-white p-6 rounded-xl shadow border mt-8">
+        <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
+        <p class="text-gray-600">
+          Use the sidebar to manage teachers, subjects, and generate timetable automatically.
+        </p>
+      </div>
+    </main>
   </div>
 
-  <div class="bg-white p-6 rounded-xl shadow border mt-8">
-    <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
-    <p class="text-gray-600">
-      Use the sidebar to manage teachers, subjects, and generate timetable automatically.
-    </p>
-  </div>
-</main>
-</div>
 
 
+  <script>
+    async function loadCourseCount() {
+      const res = await fetch("/stats/subjects");
+      const data = await res.json();
 
-<script>
-async function loadCourseCount() {
-  const res = await fetch("/stats/subjects");
-  const data = await res.json();
+      // TOTAL COURSES FROM DATABASE
+      document.getElementById("courseCount").innerText =
+        data.total + " Courses";
+    }
 
-  // TOTAL COURSES FROM DATABASE
-  document.getElementById("courseCount").innerText =
-    data.total + " Courses";
-}
+    // LOAD ON PAGE OPEN
+    loadCourseCount();
+  </script>
+  <script>
+    //total hours
+    async function totalHours() {
+      try {
+        const res = await fetch('/teachers');
+        const data = await res.json();
+        document.getElementById('totalHours').innerText = data.total;
+      } catch (err) {
+        console.error('Failed to load teacher count', err);
+      }
+    }
 
-// LOAD ON PAGE OPEN
-loadCourseCount();
-</script>
-<script>
-  //total hours
-  async function totalHours() {
-  try {
-    const res = await fetch('/teachers/count');
-    const data = await res.json();
-    document.getElementById('teacherCount').innerText = data.total;
-  } catch (err) {
-    console.error('Failed to load teacher count', err);
-  }
-}
-</script>
+    /* RENDER TIMETABLE DYNAMICALLY */
+    async function loadTimetable() {
+      try {
+        const res = await fetch('/timetable');
+        const data = await res.json();
+        const tbody = document.getElementById('timetable-body');
+
+        const groupedData = {};
+        const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+        data.forEach(item => {
+          const classKey = `S${item.sem} ${item.dept_name}`;
+          if (!groupedData[classKey]) {
+            groupedData[classKey] = {};
+            DAYS.forEach(day => groupedData[classKey][day] = new Array(6).fill(null));
+          }
+          if (item.period && item.period <= 6) {
+            groupedData[classKey][item.day][item.period - 1] = item;
+          }
+        });
+
+        let html = '';
+
+        Object.keys(groupedData).forEach(classKey => {
+          html += `
+          <tr class="hover:bg-gray-50/50 transition">
+            <td class="p-4 border-r font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
+              ${classKey}
+            </td>
+        `;
+
+          DAYS.forEach((day) => {
+            html += `<td class="p-2 border-r">`;
+            html += `<div class="grid grid-cols-6 gap-1 min-w-[360px]">`;
+
+            groupedData[classKey][day].forEach((period, idx) => {
+              if (period) {
+                const isLabClass = period.is_lab === 1 ? 'bg-green-50 border-green-100' : 'bg-white border-gray-200';
+                html += `
+                <div class="border rounded p-1 text-center shadow-sm text-[10px] ${isLabClass}">
+                  <b>P${idx + 1}</b><br>
+                  <div class="truncate text-xs text-blue-800 font-semibold" title="${period.subject_name}">${period.subject_name.substring(0, 10)}</div>
+                  <div class="truncate text-[9px] text-gray-500" title="${period.teacher_name}">${period.teacher_name.split(' ')[0]}</div>
+                </div>`;
+              } else {
+                html += `<div class="border rounded p-1 text-center shadow-sm text-[10px] border-dashed border-gray-200 bg-gray-50 text-gray-400 flex flex-col items-center justify-center min-h-[48px]">P${idx + 1}</div>`;
+              }
+            });
+
+            html += `</div></td>`;
+          });
+          html += `</tr>`;
+        });
+
+        if (Object.keys(groupedData).length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">No timetable records found. Click Generate Timetable to create a schedule.</td></tr>`;
+        } else {
+          tbody.innerHTML = html;
+        }
+
+      } catch (err) {
+        console.error('Failed to load timetable', err);
+        document.getElementById('timetable-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">Error loading timetable data</td></tr>`;
+      }
+    }
+
+    loadTimetable();
+  </script>
 
 
-<script>
-//TOTAL TEACHER
-async function loadTeacherCount() {
-  try {
-    const res = await fetch('/teachers/count');
-    const data = await res.json();
-    document.getElementById('teacherCount').innerText = data.total;
-  } catch (err) {
-    console.error('Failed to load teacher count', err);
-  }
-}
+  <script>
+    //TOTAL TEACHER
+    async function loadTeacherCount() {
+      try {
+        const res = await fetch('/teachers/count');
+        const data = await res.json();
+        document.getElementById('teacherCount').innerText = data.total;
+      } catch (err) {
+        console.error('Failed to load teacher count', err);
+      }
+    }
 
-// load on page start
-loadTeacherCount();
-</script>
+    // load on page start
+    loadTeacherCount();
+  </script>
 
 
 
@@ -276,51 +310,52 @@ loadTeacherCount();
     <p class="text-2xl font-bold text-green-600">Active</p>
   </div>
 
-</div>
+  </div>
 
-<div class="bg-white p-6 rounded-xl shadow border">
-  <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
-  <p class="text-gray-600">
-    Use the sidebar to manage teachers, subjects, and generate timetable automatically.
-  </p>
-</div>
+  <div class="bg-white p-6 rounded-xl shadow border">
+    <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
+    <p class="text-gray-600">
+      Use the sidebar to manage teachers, subjects, and generate timetable automatically.
+    </p>
+  </div>
 
-</main>
-</div>
+  </main>
+  </div>
 
-<!-- ================= SCRIPT ================= -->
-<script>
+  <!-- ================= SCRIPT ================= -->
+  <script>
 
-/* ROLE CHECK */
-const isAdmin = localStorage.getItem("isAdmin") === "true";
+    /* ROLE CHECK */
+    const isAdmin = localStorage.getItem("isAdmin") === "true";
 
-document.querySelectorAll(".admin-only").forEach(el => {
-  el.style.display = isAdmin ? "flex" : "none";
-});
-
-/* GENERATE TIMETABLE */
-/* GENERATE TIMETABLE */
-async function generate(){
-  try{
-    const res = await fetch('/generate', {
-      method: 'POST',                          
-      headers: { 'Content-Type':'application/json' }, 
-      body: JSON.stringify({
-        dept: deptSelect.value,                
-        sem: semSelect.value                  
-      })
+    document.querySelectorAll(".admin-only").forEach(el => {
+      el.style.display = isAdmin ? "flex" : "none";
     });
 
-    const data = await res.json();
-    alert(data.message);
-  }catch(err){
-    alert("Error generating timetable");
-  }
-}
+    /* GENERATE TIMETABLE */
+    /* GENERATE TIMETABLE */
+    async function generate() {
+      try {
+        const res = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dept: deptSelect.value,
+            sem: semSelect.value
+          })
+        });
 
-//clean generator code
+        const data = await res.json();
+        alert(data.message);
+      } catch (err) {
+        alert("Error generating timetable");
+      }
+    }
 
-</script>
+    //clean generator code
+
+  </script>
 
 </body>
+
 </html>
