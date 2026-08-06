@@ -4,164 +4,320 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KTU Timetable Admin</title>
+  <title>Student Timetable</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: "#135bec", "background-light": "#f6f6f8" },
+          fontFamily: { display: ["Lexend"] }
+        }
+      }
+    }
+  </script>
 
   <style>
+    body {
+      font-family: 'Lexend', sans-serif;
+    }
+
     @media print {
 
       button,
-      select {
+      select,
+      .no-print {
         display: none !important;
+      }
+
+      .print-full {
+        margin-left: 0 !important;
       }
     }
 
-    .subject-badge {
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: bold;
-      color: white;
+    .table-container::-webkit-scrollbar {
+      height: 6px;
     }
 
-    .teacher-name {
-      font-size: 11px;
+    .table-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
     }
   </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-background-light min-h-screen text-[#111318]">
 
-  <div class="max-w-7xl mx-auto p-6">
+  <div class="flex min-h-screen">
 
-    <h1 class="text-3xl font-bold mb-8 text-center text-blue-700">
-      KTU Timetable – Admin Panel
-    </h1>
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="w-64 bg-white border-r border-gray-200 fixed h-full no-print">
+      <div class="p-6 flex flex-col h-full">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined">calendar_month</span>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold">Student Portal</h2>
+            <p class="text-xs text-gray-500">Published Timetables</p>
+          </div>
+        </div>
 
-    <!-- FILTER -->
-    <div class="grid md:grid-cols-4 gap-6 mb-8 bg-white p-6 rounded-xl shadow">
+        <nav class="flex flex-col gap-2">
+          <a href="admin.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Dashboard</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
 
-      <div>
-        <label class="block text-sm font-semibold mb-2">Branch</label>
-        <select id="branch" onchange="generateTimetable()" class="w-full p-3 border rounded-lg">
-          <option value="CSE">CSE</option>
-        </select>
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="ml-64 print-full flex-1 p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Student Timetable</h1>
+
+        <div class="flex gap-4 items-end no-print">
+          <button onclick="window.print()"
+            class="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">print</span>
+            Print / Download
+          </button>
+        </div>
       </div>
 
-
-      <div>
-        <label class="block text-sm font-semibold mb-2">Semester</label>
-        <select id="semester" onchange="generateTimetable()" class="w-full p-3 border rounded-lg">
-          <option value="1">Semester 1</option>
-          <option value="2">Semester 2</option>
-          <option value="3">Semester 3</option>
-          <option value="4">Semester 4</option>
-          <option value="5">Semester 5</option>
-          <option value="6">Semester 6</option>
-          <option value="7">Semester 7</option>
-          <option value="8">Semester 8</option>
-        </select>
+      <!-- Timetable per class -->
+      <div id="timetableContainer">
+        <p class="text-center text-gray-400 py-12">Loading published timetables...</p>
       </div>
-
-      <div class="flex items-end">
-        <button onclick="window.print()" class="w-full bg-blue-600 text-white py-3 rounded-lg">
-          Print / Download
-        </button>
-      </div>
-
-    </div>
-
-    <!-- TIMETABLE -->
-    <div class="overflow-x-auto bg-white rounded-xl shadow">
-      <table class="min-w-full border text-center">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="border p-3">Day</th>
-            <th class="border p-3">I</th>
-            <th class="border p-3">II</th>
-            <th class="border p-3">III</th>
-            <th class="border p-3">IV</th>
-            <th class="border p-3">V</th>
-            <th class="border p-3">VI</th>
-          </tr>
-        </thead>
-        <tbody id="timetableBody"></tbody>
-      </table>
-    </div>
-
+    </main>
   </div>
 
   <script>
-    //  Colors
-    const subjectColors = {
-      CST304: "bg-blue-600",
-      CST203: "bg-green-600",
-      CST205: "bg-purple-600",
-      CSL332: "bg-yellow-500",
-      CSD334: "bg-red-600"
-    };
+    const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const MAX_PERIODS = 6;
 
-    //  Timetable Data (Branch → Batch → Semester)
-    const timetableData = {
-      CSE: {
-        3: {
-          Monday: [
-            [{ code: "CST304", teacher: "Deepa" }],
-            [{ code: "CSD334", teacher: "Shibu" }],
-            [{ code: "CSL332", teacher: "Keerthana" }],
-            [],
-            [{ code: "CST203", teacher: "Arun" }],
-            [{ code: "CST205", teacher: "Meera" }]
-          ],
-          Tuesday: [[], [], [], [], [], []],
-          Wednesday: [[], [], [], [], [], []],
-          Thursday: [[], [], [], [], [], []],
-          Friday: [[], [], [], [], [], []]
+    async function loadPublishedTimetable() {
+      const container = document.getElementById('timetableContainer');
+
+      try {
+        const [res, lockedRes] = await Promise.all([
+          fetch('/timetable/published'),
+          fetch('/locked_slots')
+        ]);
+        const data = await res.json();
+        const lockedSlots = await lockedRes.json();
+
+        if (!data || data.length === 0) {
+          container.innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm border p-12 text-center">
+              <span class="material-symbols-outlined text-6xl text-gray-300 mb-4 block">event_busy</span>
+              <h2 class="text-xl font-bold text-gray-500 mb-2">No Published Timetable</h2>
+              <p class="text-gray-400">The admin has not yet published a timetable. Please check back later.</p>
+            </div>`;
+          return;
         }
-      }
-    };
 
-    function generateTimetable() {
-      const branch = branchEl.value;
-      const sem = semesterEl.value;
-      const body = timetableBody;
-
-      body.innerHTML = "";
-
-      const schedule = timetableData[branch]?.[sem];
-      if (!schedule) {
-        body.innerHTML = `<tr><td colspan="7" class="p-6 text-gray-400">
-      No timetable available
-    </td></tr>`;
-        return;
-      }
-
-      Object.entries(schedule).forEach(([day, slots]) => {
-        let row = `<tr>
-      <td class="border p-3 font-semibold">${day}</td>`;
-        slots.forEach(slot => {
-          row += `<td class="border p-2 align-top">`;
-          if (slot.length === 0) row += "—";
-          slot.forEach(s => {
-            row += `
-        <div class="mb-2">
-          <div class="subject-badge ${subjectColors[s.code]}">${s.code}</div>
-          <div class="teacher-name">${s.teacher}</div>
-        </div>`;
-          });
-          row += `</td>`;
+        // Show only one published cycle (Odd or Even) based on latest published row.
+        const latestPublished = data.reduce((latest, row) => {
+          if (!latest) return row;
+          return Number(row.id) > Number(latest.id) ? row : latest;
+        }, null);
+        const activeParity = Number(latestPublished.sem) % 2 === 0 ? 'even' : 'odd';
+        const publishedData = data.filter(row => {
+          const semNum = Number(row.sem);
+          if (Number.isNaN(semNum)) return false;
+          return activeParity === 'odd' ? semNum % 2 === 1 : semNum % 2 === 0;
         });
-        row += `</tr>`;
-        body.innerHTML += row;
-      });
+
+        // Group by class_name
+        const grouped = {};
+        const classSemMap = {};
+
+        publishedData.forEach(item => {
+          const classKey = item.class_name || `S${item.sem} ${item.dept_name}`;
+          classSemMap[classKey] = Number(item.sem);
+          if (!grouped[classKey]) {
+            grouped[classKey] = { sem: item.sem, schedule: {} };
+            DAYS.forEach(day => {
+              grouped[classKey].schedule[day] = new Array(MAX_PERIODS).fill(null);
+            });
+          }
+          if (item.period && item.period <= MAX_PERIODS) {
+            grouped[classKey].schedule[item.day][item.period - 1] = item;
+          }
+        });
+
+        // Merge manual lab slots from locked_slots table into the same grid.
+        lockedSlots.forEach(slot => {
+          if (slot.is_lab_slot !== 1) return;
+          if (!slot.class_name || !slot.day || !slot.period) return;
+          if (!DAYS.includes(slot.day) || slot.period > MAX_PERIODS) return;
+
+          let slotSem = classSemMap[slot.class_name];
+          if (!slotSem) {
+            const semMatch = slot.class_name.match(/S(\d+)/i);
+            slotSem = semMatch ? parseInt(semMatch[1], 10) : NaN;
+          }
+          if (Number.isNaN(slotSem)) return;
+          const isOddSem = slotSem % 2 === 1;
+          if ((activeParity === 'odd' && !isOddSem) || (activeParity === 'even' && isOddSem)) return;
+
+          const classKey = slot.class_name;
+          if (!grouped[classKey]) {
+            grouped[classKey] = { sem: slotSem, schedule: {} };
+            DAYS.forEach(day => {
+              grouped[classKey].schedule[day] = new Array(MAX_PERIODS).fill(null);
+            });
+          }
+
+          grouped[classKey].schedule[slot.day][slot.period - 1] = {
+            id: `lab-${slot.id}`,
+            day: slot.day,
+            period: slot.period,
+            sem: grouped[classKey].sem,
+            class_name: classKey,
+            subject_name: 'Lab Slot',
+            subject_code: 'LAB',
+            teacher_name: 'Lab Slot',
+            room_no: 'Lab',
+            is_lab: 1
+          };
+        });
+
+        if (Object.keys(grouped).length === 0) {
+          container.innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm border p-12 text-center">
+              <span class="material-symbols-outlined text-6xl text-gray-300 mb-4 block">filter_alt_off</span>
+              <h2 class="text-xl font-bold text-gray-500 mb-2">No Published Timetable</h2>
+              <p class="text-gray-400">Published timetable data for the latest cycle is not available right now.</p>
+            </div>`;
+          return;
+        }
+
+        // Subject color palette
+        const colorPalette = [
+          { bg: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-800' },
+          { bg: 'bg-green-50', border: 'border-green-300', text: 'text-green-800' },
+          { bg: 'bg-purple-50', border: 'border-purple-300', text: 'text-purple-800' },
+          { bg: 'bg-orange-50', border: 'border-orange-300', text: 'text-orange-800' },
+          { bg: 'bg-pink-50', border: 'border-pink-300', text: 'text-pink-800' },
+          { bg: 'bg-teal-50', border: 'border-teal-300', text: 'text-teal-800' },
+          { bg: 'bg-amber-50', border: 'border-amber-300', text: 'text-amber-800' },
+          { bg: 'bg-indigo-50', border: 'border-indigo-300', text: 'text-indigo-800' },
+        ];
+        const subjectColorMap = {};
+        let colorIdx = 0;
+
+        function getSubjectColor(subjectName) {
+          if (subjectName === 'Free Period') return { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-400' };
+          if (!subjectColorMap[subjectName]) {
+            subjectColorMap[subjectName] = colorPalette[colorIdx % colorPalette.length];
+            colorIdx++;
+          }
+          return subjectColorMap[subjectName];
+        }
+
+        let html = '';
+
+        // Sort classes: S1, S2, S3... S8
+        const sortedClasses = Object.keys(grouped).sort((a, b) => {
+          const semA = grouped[a].sem || 0;
+          const semB = grouped[b].sem || 0;
+          return semA - semB;
+        });
+
+        sortedClasses.forEach(classKey => {
+          const classData = grouped[classKey];
+
+          html += `
+          <div class="bg-white rounded-xl shadow-sm border overflow-hidden mb-8">
+            <div class="p-4 border-b bg-gradient-to-r from-primary/5 to-transparent flex justify-between items-center">
+              <h2 class="font-bold text-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">school</span>
+                ${classKey}
+              </h2>
+              <span class="text-sm text-gray-500">Semester ${classData.sem}</span>
+            </div>
+
+            <div class="table-container overflow-x-auto">
+              <table class="w-full border-collapse min-w-[800px]">
+                <thead>
+                  <tr class="bg-gray-50 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                    <th class="p-3 border-r text-left w-28">Day</th>`;
+
+          for (let i = 1; i <= MAX_PERIODS; i++) {
+            html += `<th class="p-3 border-r text-center">Period ${i}</th>`;
+          }
+          html += `</tr></thead><tbody class="divide-y divide-gray-100">`;
+
+          DAYS.forEach(day => {
+            html += `<tr class="hover:bg-gray-50/50 transition">`;
+            html += `<td class="p-3 border-r font-bold text-gray-700 text-sm bg-gray-50/50">${day}</td>`;
+
+            classData.schedule[day].forEach((period, idx) => {
+              if (period) {
+                const isFree = period.subject_name === 'Free Period';
+                const isLab = period.is_lab === 1;
+                const isLabSlot = period.subject_name === 'Lab Slot';
+                const color = getSubjectColor(period.subject_name);
+                const subCode = period.subject_code || period.subject_name.substring(0, 10);
+                const teacherName = period.teacher_name || '';
+
+                if (isFree) {
+                  html += `<td class="p-2 border-r">
+                    <div class="border border-dashed border-gray-200 rounded p-2 text-center bg-gray-50/50 min-h-[60px] flex flex-col items-center justify-center">
+                      <span class="text-[10px] text-gray-400">Free</span>
+                    </div>
+                  </td>`;
+                } else {
+                  html += `<td class="p-2 border-r">
+                    <div class="border ${color.border} ${color.bg} rounded p-2 text-center min-h-[60px] ${isLab ? 'shadow-[inset_0_0_0_1px_rgba(74,222,128,0.3)]' : ''}">
+                      <div class="font-bold text-xs ${color.text} truncate" title="${period.subject_name}">${subCode}</div>
+                      <div class="text-[10px] text-gray-600 mt-1 truncate" title="${teacherName}">
+                        <span class="material-symbols-outlined text-[10px] align-middle">person</span>
+                        ${teacherName || 'TBA'}
+                      </div>
+                      ${isLab ? `<div class="text-[9px] text-green-600 font-bold mt-0.5">${isLabSlot ? 'LAB SLOT' : 'LAB'}</div>` : ''}
+                      ${period.room_no ? `<div class="text-[9px] text-indigo-500 mt-0.5">${period.room_no}</div>` : ''}
+                    </div>
+                  </td>`;
+                }
+              } else {
+                html += `<td class="p-2 border-r">
+                  <div class="border border-dashed border-yellow-200 rounded p-2 text-center bg-yellow-50/50 min-h-[60px] flex flex-col items-center justify-center">
+                    <span class="text-[10px] text-yellow-600 font-bold">FREE</span>
+                    <span class="text-[9px] text-gray-500 mt-1">Free Period</span>
+                  </div>
+                </td>`;
+              }
+            });
+
+            html += `</tr>`;
+          });
+
+          html += `</tbody></table></div></div>`;
+        });
+
+        container.innerHTML = html;
+
+      } catch (err) {
+        console.error('Failed to load published timetable', err);
+        container.innerHTML = `
+          <div class="bg-white rounded-xl shadow-sm border p-12 text-center">
+            <span class="material-symbols-outlined text-6xl text-red-300 mb-4 block">error</span>
+            <h2 class="text-xl font-bold text-red-500 mb-2">Error Loading Timetable</h2>
+            <p class="text-gray-400">Please try refreshing the page.</p>
+          </div>`;
+      }
     }
 
-    const branchEl = document.getElementById("branch");
-    const semesterEl = document.getElementById("semester");
-    const timetableBody = document.getElementById("timetableBody");
-
-    generateTimetable();
+    // Load on page start
+    loadPublishedTimetable();
   </script>
 
 </body>

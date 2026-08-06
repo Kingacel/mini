@@ -1,0 +1,124 @@
+CREATE DATABASE IF NOT EXISTS college_timetable_me;
+USE college_timetable_me;
+
+-- 1. Departments
+CREATE TABLE departments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) UNIQUE
+);
+
+-- 2. Teachers (Profile Data)
+CREATE TABLE teachers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100) UNIQUE,
+  password VARCHAR(100) NOT NULL, 
+  dept_id INT,
+  FOREIGN KEY (dept_id) REFERENCES departments(id)
+);
+
+-- 3. Subjects
+CREATE TABLE subjects (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  dept_id INT,
+  sem INT,
+  hours_required INT,
+  FOREIGN KEY (dept_id) REFERENCES departments(id)
+);
+
+-- 4. Course Completion Logs (3NF: Tracks the 'Time' attribute)
+CREATE TABLE course_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  teacher_id INT,
+  subject_id INT,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(20) DEFAULT 'completed',
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+  FOREIGN KEY (subject_id) REFERENCES subjects(id)
+);
+
+-- 5. Timetable
+CREATE TABLE timetable (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  dept_id INT,
+  sem INT,
+  day VARCHAR(10),
+  period INT,
+  subject_id INT,
+  teacher_id INT,
+  FOREIGN KEY (dept_id) REFERENCES departments(id),
+  FOREIGN KEY (subject_id) REFERENCES subjects(id),
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+);
+
+-- Seed Data
+INSERT INTO departments (name) VALUES ('CSE'), ('ECE');
+INSERT INTO admins (email, password) VALUES ('admin@gmail.com', '1234');
+
+
+
+-- Populating Subjects for CSE (dept_id = 1)
+-- Semester 1
+INSERT INTO subjects (name, dept_id, sem, hours_required) VALUES 
+('Linear Algebra and Calculus', 1, 1, 4),
+('Engineering Physics A', 1, 1, 4),
+('Engineering Mechanics', 1, 1, 3),
+('Basics of Civil & Mechanical Engineering', 1, 1, 4),
+('Life Skills', 1, 1, 4),
+('Engineering Physics Lab', 1, 1, 2),
+('Civil & Mechanical Workshop', 1, 1, 2);
+
+-- Semester 2
+INSERT INTO subjects (name, dept_id, sem, hours_required) VALUES 
+('Vector Calculus, Differential Equations and Transforms', 1, 2, 4),
+('Engineering Chemistry', 1, 2, 4),
+('Engineering Graphics', 1, 2, 4),
+('Basics of Electrical & Electronics Engineering', 1, 2, 4),
+('Professional Communication', 1, 2, 4),
+('Programming in C', 1, 2, 5),
+('Engineering Chemistry Lab', 1, 2, 2),
+('Electrical & Electronics Workshop', 1, 2, 2);
+
+-- Semester 3
+INSERT INTO subjects (name, dept_id, sem, hours_required) VALUES 
+('Discrete Mathematical Structures', 1, 3, 4),
+('Data Structures', 1, 3, 4),
+('Logic System Design', 1, 3, 4),
+('Object Oriented Programming Using Java', 1, 3, 4),
+('Design & Engineering', 1, 3, 2),
+('Sustainable Engineering', 1, 3, 2),
+('Data Structures Lab', 1, 3, 3),
+('Object Oriented Programming Lab (in Java)', 1, 3, 3);
+
+-- Semester 4
+INSERT INTO subjects (name, dept_id, sem, hours_required) VALUES 
+('Graph Theory', 1, 4, 4),
+('Computer Organization and Architecture', 1, 4, 4),
+('Database Management Systems', 1, 4, 4),
+('Operating Systems', 1, 4, 4),
+('Professional Ethics', 1, 4, 2),
+('Constitution of India', 1, 4, 2),
+('Digital Lab', 1, 4, 3),
+('Operating Systems Lab', 1, 4, 3);
+
+-- Semester 5
+INSERT INTO subjects (name, dept_id, sem, hours_required) VALUES 
+('Formal Languages and Automata Theory', 1, 5, 4),
+('Computer Networks', 1, 5, 4),
+('System Software', 1, 5, 4),
+('Microprocessors and Microcontrollers', 1, 5, 4),
+('Management of Software Systems', 1, 5, 3),
+('Disaster Management', 1, 5, 2),
+('System Software and Microprocessors Lab', 1, 5, 4),
+('Database Management Systems Lab', 1, 5, 4);
+
+-- Semester 6
+INSERT INTO subjects (name, dept_id, sem, hours_required) VALUES 
+('Compiler Design', 1, 6, 4),
+('Computer Graphics and Image Processing', 1, 6, 4),
+('Algorithm Analysis and Design', 1, 6, 4),
+('Industrial Economics & Foreign Trade', 1, 6, 3),
+('Comprehensive Course Work', 1, 6, 1),
+('Networking Lab', 1, 6, 3),
+('Miniproject', 1, 6, 3);

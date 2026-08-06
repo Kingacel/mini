@@ -47,6 +47,18 @@
       background: #cbd5e1;
       border-radius: 10px;
     }
+
+    /* Keep semester dropdown options opaque while scrolling */
+    #semSelect {
+      background-color: #ffffff;
+      position: relative;
+      z-index: 30;
+    }
+
+    #semSelect option {
+      background-color: #ffffff;
+      color: #1f2937;
+    }
   </style>
 
 </head>
@@ -56,7 +68,7 @@
   <div class="flex min-h-screen">
 
     <!-- ================= SIDEBAR ================= -->
-    <aside class="w-64 bg-white border-r border-gray-200 fixed h-full">
+    <aside class="w-64 bg-white border-r border-gray-200 fixed h-full z-50">
       <div class="p-6 flex flex-col h-full">
 
         <!-- Profile -->
@@ -98,25 +110,56 @@
             <span>Manage Subjects</span>
           </a>
 
+          <a href="lab_slots.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">event_seat</span>
+            <span>Manual Lab Slots</span>
+          </a>
+
+          <a href="manageclasses.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">school</span>
+            <span>Manage Classes</span>
+          </a>
+
+          <div class="admin-only px-3 py-2 mt-2 border-t pt-4">
+            <label class="text-xs text-gray-500 font-bold uppercase mb-1 block">Semester Group</label>
+            <select id="semSelect"
+              class="w-full text-sm rounded border-gray-200 bg-gray-50/50 p-2 focus:ring-primary focus:border-primary">
+              <option value="odd">Odd semesters table (1,3,5,7)</option>
+              <option value="even">Even semesters table (2,4,6,8)</option>
+            </select>
+          </div>
           <button onclick="generate()"
             class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-600 transition text-left">
             <span class="material-symbols-outlined">auto_awesome</span>
             <span>Generate Timetable</span>
           </button>
 
-          <!-- BOTH ADMIN & TEACHER -->
+          <!-- BOTH ADMIN & TEACHER 
           <a href="timetable.html"
             class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
             <span class="material-symbols-outlined">calendar_month</span>
             <span>View Timetable</span>
           </a>
-
+        -->
           <button onclick="publishTimetable()" class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg
          hover:bg-green-100 hover:text-green-700 transition text-left">
             <span class="material-symbols-outlined">publish</span>
             <span>Publish Timetable</span>
           </button>
 
+          <a href="student.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 hover:text-primary transition">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span>View Timetable</span>
+          </a>
+
+          <a href="managesubjects.html"
+            class="admin-only flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-700 transition">
+            <span class="material-symbols-outlined">schedule</span>
+            <span>Manage Student Hours</span>
+          </a>
 
         </nav>
       </div>
@@ -127,36 +170,46 @@
       <h1 class="text-3xl font-bold mb-6">ADMIN Dashboard</h1>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow border">
-          <p class="text-sm text-gray-500">Workload Capacity</p>
-          <p class="text-2xl font-bold">12 / 18 hrs/week</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow border">
-          <p class="text-sm text-gray-500">Current Assignments</p>
-          <p id="assignmentCount" class="text-2xl font-bold">0 Courses</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow border">
-          <p class="text-sm text-gray-500">System Status</p>
-          <p class="text-2xl font-bold text-green-600">Active</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Row 1 -->
         <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500">
           <p class="text-sm text-gray-500 font-medium">Available Teachers</p>
           <p id="teacherCount" class="text-3xl font-bold text-gray-800">0</p>
         </div>
-
         <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500">
           <p class="text-sm text-gray-500 font-medium">Current Courses</p>
-          <p id="courseCount" class="text-3xl font-bold text-gray-800">0 Courses</p>
+          <p id="courseCount" class="text-3xl font-bold text-gray-800">0</p>
         </div>
-
         <div class="bg-white p-6 rounded-xl shadow border-l-4 border-purple-500">
           <p class="text-sm text-gray-500 font-medium">Total Weekly Time</p>
           <p id="totalHours" class="text-3xl font-bold text-gray-800">0 hrs</p>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500 font-medium">Workload Capacity</p>
+          <p class="text-2xl font-bold">12 / 18 hrs/week</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500 font-medium">Current Assignments</p>
+          <p id="assignmentCount" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500 font-medium">System Status</p>
+          <p class="text-2xl font-bold text-green-600">Active</p>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500 font-medium">Departments</p>
+          <p class="text-2xl font-bold text-gray-800">1 Active</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500 font-medium">Classrooms</p>
+          <p class="text-2xl font-bold text-gray-800">8 Rooms</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow border">
+          <p class="text-sm text-gray-500 font-medium">Lab Spaces</p>
+          <p class="text-2xl font-bold text-gray-800">2 Labs</p>
         </div>
       </div>
 
@@ -166,12 +219,12 @@
             <tr class="bg-white border-b text-[11px] font-bold text-gray-500 uppercase tracking-wider">
               <th
                 class="p-4 border-r w-32 text-left bg-gray-100 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                1- Class</th>
-              <th class="p-4 border-r text-center bg-orange-50/30 text-orange-700">2- Monday</th>
-              <th class="p-4 border-r text-center bg-red-50/30 text-red-700">3- Tuesday</th>
-              <th class="p-4 border-r text-center bg-pink-50/30 text-pink-700">4- Wednesday</th>
-              <th class="p-4 border-r text-center bg-purple-50/30 text-purple-700">5- Thursday</th>
-              <th class="p-4 text-center bg-blue-50/30 text-blue-700">6- Friday</th>
+                Class</th>
+              <th class="p-4 border-r text-center bg-orange-50/30 text-orange-700"> Monday</th>
+              <th class="p-4 border-r text-center bg-red-50/30 text-red-700"> Tuesday</th>
+              <th class="p-4 border-r text-center bg-pink-50/30 text-pink-700"> Wednesday</th>
+              <th class="p-4 border-r text-center bg-purple-50/30 text-purple-700"> Thursday</th>
+              <th class="p-4 text-center bg-blue-50/30 text-blue-700"> Friday</th>
             </tr>
           </thead>
 
@@ -181,11 +234,28 @@
         </table>
       </div>
 
-      <div class="bg-white p-6 rounded-xl shadow border mt-8">
-        <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
-        <p class="text-gray-600">
-          Use the sidebar to manage teachers, subjects, and generate timetable automatically.
-        </p>
+      <!-- COMPLETED CLASSES LOG -->
+      <div class="bg-white rounded-xl shadow-sm border overflow-hidden mt-8 mb-8">
+        <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+          <h2 class="font-bold text-lg">Class Completions (Today)</h2>
+          <p class="text-sm text-gray-500">Classes where designated teacher was present and period completed</p>
+        </div>
+
+        <table class="w-full text-left">
+          <thead class="bg-gray-100 text-sm text-gray-500">
+            <tr>
+              <th class="p-3">Teacher</th>
+              <th class="p-3">Completed Class</th>
+              <th class="p-3">Period</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="completedClassesTable" class="divide-y">
+            <tr>
+              <td colspan="4" class="p-4 text-center text-gray-400">Loading completions...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </main>
   </div>
@@ -220,56 +290,142 @@
     /* RENDER TIMETABLE DYNAMICALLY */
     async function loadTimetable() {
       try {
-        const res = await fetch('/timetable');
+        const [res, labRes] = await Promise.all([
+          fetch('/timetable'),
+          fetch('/locked_slots')
+        ]);
         const data = await res.json();
+        const labData = await labRes.json();
         const tbody = document.getElementById('timetable-body');
 
         const groupedData = {};
         const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
+        // Read UI state for Sem Filter
+        const semSelect = document.getElementById("semSelect");
+        const currentSemGroup = semSelect ? semSelect.value : 'odd';
+        let allowedSems = [1, 3, 5, 7];
+        if (currentSemGroup === 'odd') allowedSems = [1, 3, 5, 7];
+        if (currentSemGroup === 'even') allowedSems = [2, 4, 6, 8];
+
+        // Ensure groupedData has structure for all allowed semesters with class names
+        // This is needed so lab slots can map to classes even if timetable is empty
+        const classNamesSet = new Set([...data.map(i => i.class_name), ...labData.map(i => i.class_name)].filter(Boolean));
+
+        // Loop over generated timetable and insert
+        let freeCounts = {};
         data.forEach(item => {
-          const classKey = `S${item.sem} ${item.dept_name}`;
-          if (!groupedData[classKey]) {
-            groupedData[classKey] = {};
-            DAYS.forEach(day => groupedData[classKey][day] = new Array(6).fill(null));
+          if (allowedSems.includes(item.sem)) {
+            const classKey = item.class_name || `S${item.sem} ${item.dept_name}`;
+
+            if (!groupedData[classKey]) {
+              groupedData[classKey] = {};
+              DAYS.forEach(day => groupedData[classKey][day] = new Array(6).fill(null));
+            }
+            if (item.period && item.period <= 6) {
+              const pIdx = item.period - 1;
+              const isFree = item.subject_code === 'FREE' || item.subject_name === 'Free Period';
+              const isHighSem = [6, 7, 8].includes(item.sem);
+
+              if (!freeCounts[classKey]) freeCounts[classKey] = 0;
+
+              if (!isFree) {
+                // Real subjects always overwrite
+                groupedData[classKey][item.day][pIdx] = item;
+              } else {
+                // Free periods only applied if empty
+                if (!groupedData[classKey][item.day][pIdx]) {
+                  if (isHighSem) {
+                    if (freeCounts[classKey] < 3) {
+                      groupedData[classKey][item.day][pIdx] = item;
+                      freeCounts[classKey]++;
+                    }
+                  } else {
+                    groupedData[classKey][item.day][pIdx] = item;
+                  }
+                }
+              }
+            }
           }
-          if (item.period && item.period <= 6) {
-            groupedData[classKey][item.day][item.period - 1] = item;
+        });
+
+        // Loop over lab slots and insert, overwriting if needed
+        labData.forEach(item => {
+          // We extract the semester number from class_name e.g. "S1 CSE A" -> 1
+          const match = item.class_name ? item.class_name.match(/S(\d)/) : null;
+          const sem = match ? parseInt(match[1]) : 0;
+
+          if (allowedSems.includes(sem) && item.is_lab_slot === 1) {
+            const classKey = item.class_name;
+            if (!groupedData[classKey]) {
+              groupedData[classKey] = {};
+              DAYS.forEach(day => groupedData[classKey][day] = new Array(6).fill(null));
+            }
+            if (item.period && item.period <= 6) {
+              // Merge it in a way that matches timetable structure
+              groupedData[classKey][item.day][item.period - 1] = {
+                ...item,
+                subject_name: item.event_name,
+                subject_code: "LAB",
+                teacher_name: "Lab Instructor",
+                room_no: "Lab",
+                is_lab: 1
+              };
+            }
           }
         });
 
         let html = '';
 
-        Object.keys(groupedData).forEach(classKey => {
-          html += `
+        Object.keys(groupedData)
+          .sort((a, b) => a.localeCompare(b)) // sort alphabetically
+          .forEach(classKey => {
+            html += `
           <tr class="hover:bg-gray-50/50 transition">
             <td class="p-4 border-r font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs">
               ${classKey}
             </td>
         `;
 
-          DAYS.forEach((day) => {
-            html += `<td class="p-2 border-r">`;
-            html += `<div class="grid grid-cols-6 gap-1 min-w-[360px]">`;
+            DAYS.forEach((day) => {
+              html += `<td class="p-2 border-r">`;
+              html += `<div class="grid grid-cols-6 gap-1 min-w-[360px]">`;
 
-            groupedData[classKey][day].forEach((period, idx) => {
-              if (period) {
-                const isLabClass = period.is_lab === 1 ? 'bg-green-50 border-green-100' : 'bg-white border-gray-200';
-                html += `
-                <div class="border rounded p-1 text-center shadow-sm text-[10px] ${isLabClass}">
+              groupedData[classKey][day].forEach((period, idx) => {
+                if (period) {
+                  const isLabClass = period.is_lab === 1 ? 'bg-green-50 border-green-300 shadow-[inset_0_0_0_1px_rgba(74,222,128,0.2)] hover:bg-green-100' : 'bg-white border-gray-200 hover:bg-gray-50';
+                  const courseCode = period.subject_code || (period.subject_name ? period.subject_name.substring(0, 8) : 'Unknown');
+                  const roomNo = period.room_no ? `Room ${period.room_no}` : 'TBA';
+                  const teacherName = period.teacher_name || 'TBA';
+                  const subjectName = period.subject_name || 'Unknown';
+
+                  // Replace single quotes just in case for the onclick handler
+                  const safeSub = subjectName.replace(/'/g, "\\'");
+                  const safeTeacher = teacherName.replace(/'/g, "\\'");
+                  const safeRoom = roomNo.replace(/'/g, "\\'");
+
+                  html += `
+                <div onclick="openModal('${safeSub}', '${safeTeacher}', '${safeRoom}', ${period.subject_id || 'null'}, ${period.teacher_id || 'null'}, ${idx})" class="border rounded p-1 text-center shadow-sm text-[10px] cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all ${isLabClass}">
                   <b>P${idx + 1}</b><br>
-                  <div class="truncate text-xs text-blue-800 font-semibold" title="${period.subject_name}">${period.subject_name.substring(0, 10)}</div>
-                  <div class="truncate text-[9px] text-gray-500" title="${period.teacher_name}">${period.teacher_name.split(' ')[0]}</div>
+                  <div class="truncate text-xs text-blue-800 font-bold" title="${subjectName}">${courseCode}</div>
+                  <div class="truncate text-[9px] text-gray-600" title="${teacherName}">${teacherName.split(' ')[0]}</div>
+                  <div class="truncate text-[9px] text-indigo-600 font-semibold mt-0.5">${roomNo}</div>
                 </div>`;
-              } else {
-                html += `<div class="border rounded p-1 text-center shadow-sm text-[10px] border-dashed border-gray-200 bg-gray-50 text-gray-400 flex flex-col items-center justify-center min-h-[48px]">P${idx + 1}</div>`;
-              }
-            });
+                } else {
+                  html += `
+                <div class="border rounded p-1 text-center shadow-sm text-[10px] cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all bg-white border-gray-200 hover:bg-gray-50">
+                  <b>P${idx + 1}</b><br>
+                  <div class="truncate text-xs text-gray-700 font-bold" title="Free Period">FREE</div>
+                  <div class="truncate text-[9px] text-gray-600" title="TBA">TBA</div>
+                  <div class="truncate text-[9px] text-indigo-600 font-semibold mt-0.5">TBA</div>
+                </div>`;
+                }
+              });
 
-            html += `</div></td>`;
+              html += `</div></td>`;
+            });
+            html += `</tr>`;
           });
-          html += `</tr>`;
-        });
 
         if (Object.keys(groupedData).length === 0) {
           tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">No timetable records found. Click Generate Timetable to create a schedule.</td></tr>`;
@@ -305,25 +461,143 @@
 
 
 
-  <div class="bg-white p-6 rounded-xl shadow border">
-    <p class="text-sm text-gray-500">System Status</p>
-    <p class="text-2xl font-bold text-green-600">Active</p>
-  </div>
+  <!-- Add listener to Sem Select to refresh table -->
+  <script>
+    document.getElementById("semSelect").addEventListener('change', loadTimetable);
 
-  </div>
+    // Load completed classes for admin view
+    async function loadAdminClassCompletions() {
+      try {
+        const res = await fetch("/classcomplete/today");
+        const data = await res.json();
+        const tbody = document.getElementById("completedClassesTable");
 
-  <div class="bg-white p-6 rounded-xl shadow border">
-    <h2 class="text-lg font-semibold mb-4">Quick Information</h2>
-    <p class="text-gray-600">
-      Use the sidebar to manage teachers, subjects, and generate timetable automatically.
-    </p>
-  </div>
+        let html = '';
+        if (data.length === 0) {
+          html = `<tr><td colspan="4" class="p-4 text-center text-gray-400">No completed classes logged for today.</td></tr>`;
+        } else {
+          data.forEach(c => {
+            html += `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-3 font-medium text-gray-800"><span class="material-symbols-outlined text-sm align-middle mr-1">person</span> ${c.teacher_name}</td>
+                    <td class="p-3 text-gray-600 font-bold">${c.class_name}</td>
+                    <td class="p-3 text-gray-500">Period ${c.period}</td>
+                    <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">${c.status}</span></td>
+                </tr>`;
+          });
+        }
+        tbody.innerHTML = html;
+      } catch (err) {
+        console.error("Failed to load completions", err);
+      }
+    }
 
+    loadAdminClassCompletions();
+  </script>
   </main>
+  </div>
+
+  <!-- Timetable Detail Modal -->
+  <div id="timetableModal"
+    class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative transform transition-all scale-100"
+      onclick="event.stopPropagation()">
+      <button onclick="closeModal()"
+        class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+      <h3 class="text-xl font-bold mb-5 flex items-center gap-2 text-gray-800">
+        <span class="material-symbols-outlined text-primary">info</span> Class Details
+      </h3>
+      <div class="space-y-4">
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-1">Subject</p>
+          <p id="modalSubject" class="font-medium text-gray-900 text-sm leading-snug"></p>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-1">Teacher</p>
+          <p id="modalTeacher" class="font-medium text-gray-900 text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-[18px]">person</span>
+            <span id="modalTeacherName"></span>
+          </p>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <p class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-1">Classroom</p>
+          <p id="modalRoom" class="font-medium text-gray-900 text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-[18px]">meeting_room</span>
+            <span id="modalRoomNo"></span>
+          </p>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <input type="hidden" id="modalSubjectId">
+          <input type="hidden" id="modalTeacherId">
+          <input type="hidden" id="modalPeriod">
+          <button id="completeClassBtn" onclick="markClassComplete()"
+            class="w-full bg-green-600 text-white font-bold py-2 rounded shadow-sm hover:bg-green-700 transition flex justify-center items-center gap-2">
+            <span class="material-symbols-outlined">check_circle</span> Mark Class Complete
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ================= SCRIPT ================= -->
   <script>
+    /* MODAL BEHAVIOR */
+    function openModal(subjectName, teacherName, room, subjectId, teacherId, periodIndex) {
+      document.getElementById('modalSubject').innerText = subjectName;
+      document.getElementById('modalTeacherName').innerText = teacherName;
+      document.getElementById('modalRoomNo').innerText = room;
+
+      // Hidden fields for completion API
+      document.getElementById('modalSubjectId').value = subjectId || '';
+      document.getElementById('modalTeacherId').value = teacherId || '';
+      document.getElementById('modalPeriod').value = periodIndex ? parseInt(periodIndex) + 1 : '';
+
+      // Only show complete button if we have actual IDs (i.e., not a generic click without data)
+      const btn = document.getElementById('completeClassBtn');
+      if (subjectId && teacherId) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+
+      document.getElementById('timetableModal').classList.remove('hidden');
+    }
+
+    async function markClassComplete() {
+      const sId = document.getElementById('modalSubjectId').value;
+      const tId = document.getElementById('modalTeacherId').value;
+      const period = document.getElementById('modalPeriod').value;
+
+      if (!sId || !tId) return;
+
+      const res = await fetch("/classcomplete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          teacher_id: tId,
+          subject_id: sId,
+          period: period
+        })
+      });
+
+      if (res.ok) {
+        alert("Class marked as completed.");
+        closeModal();
+        loadAdminClassCompletions(); // Refresh table
+      } else {
+        alert("Failed to mark class as completed.");
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('timetableModal').classList.add('hidden');
+    }
+
+    // Close when clicking outside
+    document.getElementById('timetableModal').addEventListener('click', closeModal);
+
 
     /* ROLE CHECK */
     const isAdmin = localStorage.getItem("isAdmin") === "true";
@@ -335,24 +609,57 @@
     /* GENERATE TIMETABLE */
     /* GENERATE TIMETABLE */
     async function generate() {
+      if (!confirm("Are you sure? This will discard existing timetable data and generate a new one.")) return;
+
+      const semSelect = document.getElementById("semSelect");
+      const semValue = semSelect ? semSelect.value : 'odd';
+
+      const btn = document.querySelector('button[onclick="generate()"]');
+      if (btn) btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span><span>Generating...</span>';
+
       try {
         const res = await fetch('/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            dept: deptSelect.value,
-            sem: semSelect.value
+            dept: 1,
+            sem: semValue
           })
         });
 
         const data = await res.json();
         alert(data.message);
+        loadTimetable();
       } catch (err) {
         alert("Error generating timetable");
+      } finally {
+        if (btn) btn.innerHTML = '<span class="material-symbols-outlined">auto_awesome</span><span>Generate Timetable</span>';
       }
     }
 
     //clean generator code
+
+    /* PUBLISH TIMETABLE */
+    async function publishTimetable() {
+      if (!confirm("Publish the current timetable? Students will be able to see it.")) return;
+
+      try {
+        const res = await fetch('/timetable/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Timetable published successfully! Students can now view it.');
+          loadTimetable();
+        } else {
+          alert('Failed to publish: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Error publishing timetable');
+        console.error(err);
+      }
+    }
 
   </script>
 

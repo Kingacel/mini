@@ -1,145 +1,224 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Add Subject | 3NF Professional</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-100 p-8">
+<body class="bg-gray-100 min-h-screen">
 
-<div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow">
-  <h2 class="text-xl font-bold mb-4">Add / Edit Subject</h2>
+  <nav class="bg-white px-6 py-4 shadow-sm border-b flex justify-between items-center mb-8">
+    <div class="flex items-center gap-2 text-blue-600 font-bold">
+      <span class="material-symbols-outlined">menu_book</span>
+      <span>Add Subject Panel</span>
+    </div>
+    <a href="admin.html"
+      class="text-sm font-semibold text-gray-600 hover:text-blue-600 transition flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">dashboard</span> Back to Dashboard
+    </a>
+  </nav>
 
-  <form id="subjectForm" class="space-y-4">
-    <input type="hidden" id="subjectId">
+  <div class="max-w-4xl mx-auto mb-6 flex justify-end">
+    <a href="lab_slots.html"
+      class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 shadow-sm">
+      <span class="material-symbols-outlined">event_seat</span> Manage Manual Lab Slots
+    </a>
+  </div>
 
-    <input id="name" required class="w-full border p-2 rounded" placeholder="Subject Name">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold">Add / Edit Subject</h2>
+    </div>
 
-    <select id="dept_id" required class="w-full border p-2 rounded">
-      <option value="">Select Department</option>
-    </select>
+    <form id="subjectForm" class="space-y-4">
+      <input type="hidden" id="subjectId">
 
-    <input id="sem" type="number" required class="w-full border p-2 rounded" placeholder="Semester">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input id="code" required class="w-full border p-2 rounded" placeholder="Course Code (e.g., CST304)">
+        <input id="name" required class="w-full border p-2 rounded" placeholder="Subject Name">
+      </div>
 
-    <input id="hours" type="number" min="1" required class="w-full border p-2 rounded" placeholder="Hours per week">
+      <select id="dept_id" required class="w-full border p-2 rounded">
+        <option value="">Select Department</option>
+      </select>
 
-    <label class="flex items-center gap-2 cursor-pointer">
-      <input type="checkbox" id="is_lab">
-      <span class="text-sm font-medium">Lab Subject</span>
-    </label>
+      <input id="sem" type="number" required class="w-full border p-2 rounded" placeholder="Semester">
 
-    <button id="saveBtn" type="submit" class="bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700">
-      Save Subject
-    </button>
-  </form>
+      <input id="hours" type="number" min="1" required class="w-full border p-2 rounded" placeholder="Hours per week">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" id="is_lab">
+        <span class="text-sm font-medium">Lab Subject</span>
+      </label>
 
-  <h3 class="text-lg font-semibold mt-8 mb-3">Subjects List</h3>
-  <table class="w-full border text-sm text-left">
-    <thead class="bg-gray-200">
-      <tr>
-        <th class="border p-2">Name</th>
-        <th class="border p-2">Dept</th>
-        <th class="border p-2">Sem</th>
-        <th class="border p-2">Hours</th>
-        <th class="border p-2 text-center">Lab</th>
-        <th class="border p-2 text-center">Action</th>
-      </tr>
-    </thead>
-    <tbody id="subjectTable"></tbody>
-  </table>
-</div>
+      <button id="saveBtn" type="submit" class="bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700">
+        Save Subject
+      </button>
+    </form>
 
-<script>
-const form = document.getElementById("subjectForm");
-const table = document.getElementById("subjectTable");
-const saveBtn = document.getElementById("saveBtn");
-const subjectId = document.getElementById("subjectId");
+    <div class="flex justify-between items-center mt-10 mb-4">
+      <h3 class="text-lg font-semibold">Subjects List</h3>
+      <div class="flex gap-2">
+        <select id="semFilter" class="border p-2 rounded" onchange="filterSubjects()">
+          <option value="all">All Semesters</option>
+          <option value="1">Sem 1</option>
+          <option value="2">Sem 2</option>
+          <option value="3">Sem 3</option>
+          <option value="4">Sem 4</option>
+          <option value="5">Sem 5</option>
+          <option value="6">Sem 6</option>
+          <option value="7">Sem 7</option>
+          <option value="8">Sem 8</option>
+        </select>
+        <input id="searchInput" type="text" placeholder="Search code/name (Press Enter)" class="border p-2 rounded w-64"
+          onkeydown="if(event.key === 'Enter') filterSubjects()">
+        <button onclick="filterSubjects()"
+          class="bg-blue-100 text-blue-700 px-3 py-2 rounded hover:bg-blue-200">Search</button>
+      </div>
+    </div>
+    <table class="w-full border text-sm text-left">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="border p-2">Code</th>
+          <th class="border p-2">Name</th>
+          <th class="border p-2">Dept</th>
+          <th class="border p-2">Sem</th>
+          <th class="border p-2">Hours</th>
+          <th class="border p-2 text-center">Lab</th>
+          <th class="border p-2 text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody id="subjectTable"></tbody>
+    </table>
+  </div>
 
-// 1. LOAD DEPARTMENTS (DYNAMIC)
-async function loadDepartments() {
-  const res = await fetch("/departments");
-  const depts = await res.json();
-  const select = document.getElementById("dept_id");
-  
-  // Clear existing options except the first one
-select.innerHTML = '<option value="">Select Department</option>';
-  depts.forEach(d => {
-    // FIX: Changed d.dept_id -> d.id AND d.dept_name -> d.name
-    select.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-  });
-}
+  <script>
+    const form = document.getElementById("subjectForm");
+    const table = document.getElementById("subjectTable");
+    const saveBtn = document.getElementById("saveBtn");
+    const subjectId = document.getElementById("subjectId");
 
-// 2. LOAD SUBJECT LIST
-async function loadSubjects() {
-  const res = await fetch("/subjects");
-  const subjects = await res.json();
-  table.innerHTML = "";
+    // 1. LOAD DEPARTMENTS (DYNAMIC)
+    async function loadDepartments() {
+      const res = await fetch("/departments");
+      const depts = await res.json();
+      const select = document.getElementById("dept_id");
 
-  subjects.forEach(s => {
-    table.innerHTML += `
+      // Clear existing options except the first one
+      select.innerHTML = '<option value="">Select Department</option>';
+      depts.forEach(d => {
+        // FIX: Changed d.dept_id -> d.id AND d.dept_name -> d.name
+        select.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+      });
+    }
+
+    // 2. LOAD SUBJECT LIST
+    let allSubjects = [];
+    async function loadSubjects() {
+      const res = await fetch("/subjects");
+      allSubjects = await res.json();
+      renderSubjects(allSubjects);
+    }
+
+    function filterSubjects() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const sem = document.getElementById("semFilter").value;
+      const filtered = allSubjects.filter(s =>
+        (sem === "all" || String(s.sem) === sem) &&
+        (
+          (s.code && s.code.toLowerCase().includes(query)) ||
+          (s.name && s.name.toLowerCase().includes(query))
+        )
+      );
+      renderSubjects(filtered);
+    }
+
+    function renderSubjects(subjects) {
+      table.innerHTML = "";
+      subjects.forEach(s => {
+        table.innerHTML += `
       <tr class="hover:bg-gray-50">
-        <td class="border p-2">${s.name}</td>          <td class="border p-2">${s.dept_name}</td>     <td class="border p-2">${s.sem}</td>           <td class="border p-2">${s.hours}</td>         <td class="border p-2 text-center">${s.is_lab ? "YES" : "NO"}</td>
+        <td class="border p-2 font-mono font-semibold">${s.code || '-'}</td>
+        <td class="border p-2">${s.name}</td>          <td class="border p-2">${s.dept_name}</td>     <td class="border p-2">${s.sem}</td>           <td class="border p-2">${s.hours_required}</td>         <td class="border p-2 text-center">${s.is_lab ? "YES" : "NO"}</td>
         <td class="border p-2 text-center">
           <button class="text-blue-600 font-bold hover:underline" 
                   onclick='editSubject(${JSON.stringify(s)})'>
             Edit
+          </button> | 
+          <button class="text-red-600 font-bold hover:underline ml-2" 
+                  onclick='deleteSubject(${s.id})'>
+            Delete
           </button>
         </td>
       </tr>
     `;
-  });
-}
-//gentreator clean code
+      });
+    }
+    // 3.5 DELETE SUBJECT
+    async function deleteSubject(id) {
+      if (confirm("Are you sure you want to delete this subject?")) {
+        const res = await fetch(`/subject/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          loadSubjects();
+        } else {
+          alert("Error deleting subject.");
+        }
+      }
+    }
 
-// 3. EDIT SUBJECT (FILL FORM)
-function editSubject(s) {
-  subjectId.value = s.id;
-  document.getElementById("name").value = s.name;
-  document.getElementById("dept_id").value = s.dept_id;
-  document.getElementById("sem").value = s.sem;
-  document.getElementById("hours").value = s.hours;
-  document.getElementById("is_lab").checked = s.is_lab === 1;
+    // 3. EDIT SUBJECT (FILL FORM)
+    function editSubject(s) {
+      subjectId.value = s.id;
+      document.getElementById("code").value = s.code || '';
+      document.getElementById("name").value = s.name;
+      document.getElementById("dept_id").value = s.dept_id;
+      document.getElementById("sem").value = s.sem;
+      document.getElementById("hours").value = s.hours_required;
+      document.getElementById("is_lab").checked = s.is_lab === 1;
 
-  saveBtn.textContent = "Update Subject";
-  saveBtn.classList.replace("bg-blue-600", "bg-green-600");
-}
-// 4. SAVE / UPDATE (JSON FETCH)
-form.addEventListener("submit", async e => {
-  e.preventDefault();
+      saveBtn.textContent = "Update Subject";
+      saveBtn.classList.replace("bg-blue-600", "bg-green-600");
+    }
+    // 4. SAVE / UPDATE (JSON FETCH)
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
 
-  const id = subjectId.value;
-  const url = id ? `/subject/${id}` : "/subject";
-  const method = id ? "PUT" : "POST";
+      const id = subjectId.value;
+      const url = id ? `/subject/${id}` : "/subject";
+      const method = id ? "PUT" : "POST";
 
-  // FIXED: Structured data object
-const data = {
-  name: document.getElementById("name").value,
-  dept_id: document.getElementById("dept_id").value, // Matches Foreign Key
-  sem: document.getElementById("sem").value,
-  hours: document.getElementById("hours").value,
-  is_lab: document.getElementById("is_lab").checked ? 1 : 0 // Matches BOOLEAN/TINYINT
-};
+      // FIXED: Structured data object
+      const data = {
+        code: document.getElementById("code").value,
+        name: document.getElementById("name").value,
+        dept_id: document.getElementById("dept_id").value, // Matches Foreign Key
+        sem: document.getElementById("sem").value,
+        hours: document.getElementById("hours").value,
+        is_lab: document.getElementById("is_lab").checked ? 1 : 0 // Matches BOOLEAN/TINYINT
+      };
 
 
-  await fetch(url, {
-    method: method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
+      await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
 
-  // Reset UI
-  form.reset();
-  subjectId.value = "";
-  saveBtn.textContent = "Save Subject";
-  saveBtn.className = "bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700";
+      // Reset UI
+      form.reset();
+      subjectId.value = "";
+      saveBtn.textContent = "Save Subject";
+      saveBtn.className = "bg-blue-600 text-white px-4 py-2 rounded transition hover:bg-blue-700";
 
-  loadSubjects();
-});
+      loadSubjects();
+    });
 
-// INITIALIZE PAGE
-loadDepartments();
-loadSubjects();
-</script>
+    // INITIALIZE PAGE
+    loadDepartments();
+    loadSubjects();
+  </script>
 
 </body>
+
 </html>
